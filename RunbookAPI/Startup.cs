@@ -52,6 +52,8 @@ namespace RunbookAPI
             services.AddScoped<IUserService,UserService>();
 
             services.AddScoped<IJwtTokenGenerator,JwtTokenGenerator>();
+
+            services.AddTransient<IMailService,MailService>();
             
             services.AddCors(c =>  
             {  

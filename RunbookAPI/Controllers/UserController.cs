@@ -22,11 +22,13 @@ namespace RunbookAPI.Controllers
     {
         private IUserService _user;
         private ILogger _logger;
+        private IMailService _mail;
 
-        public UserController(ILogger<UserController> logger,IUserService user)
+        public UserController(ILogger<UserController> logger,IUserService user,IMailService mail)
         {
             _logger = logger;
             _user = user;
+            _mail = mail;
         }
 
         [HttpPost]
@@ -227,6 +229,26 @@ namespace RunbookAPI.Controllers
             {
                 _logger.LogError($"Internal server Error in CreateCustomEnvironment : {ex}");
                 return StatusCode(500,"Internal Server Error");
+            }
+        }
+
+        [HttpGet]
+        [Route("sendemail/{email}")]
+        public async Task<IActionResult> SendEMail(string email)
+        {
+            try
+            {
+                string subject = "Invitation For RunBook Application";
+                string body = "You have been invited to register with RUnBook. Click on http://localhost:3000/signup";
+                _logger.LogInformation("Preparing an Email");
+               await _mail.SendEmail(email,subject,body);
+                _logger.LogInformation("Email sent");
+                return Ok("Email sent successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal server error in SendEMail : {ex}");
+                return StatusCode(500,"Error while sending Email");
             }
         }
     }
