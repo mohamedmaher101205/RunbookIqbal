@@ -126,19 +126,19 @@ namespace RunbookAPI.Services
         public IEnumerable<Book> GetAllBooks(int userId,int tenantId)
         { 
             try{
-            string bookcmd = @"SELECT * FROM [Runbook].[dbo].[BOOK] WHERE  TenantId = @TenantId AND userId = @UserId";
+            string bookcmd = @"SELECT * FROM [Runbook].[dbo].[BOOK] WHERE  TenantId = @TenantId OR userId = @UserId";
 
             string appscmd = @"	SELECT bookapp.BookId,app.AppId,app.ApplicationName 
                                 FROM [Runbook].[dbo].[BookApplication] bookapp
                                     JOIN [Runbook].[dbo].[Application] app ON bookapp.AppId = app.AppId
                                     JOIN [Runbook].[dbo].[Book] book ON bookapp.BookId = book.BookId
-                                WHERE book.TenantId = @TenantId AND book.UserId = @UserId";
+                                WHERE book.TenantId = @TenantId OR book.UserId = @UserId";
 
             string envcmd = @"	SELECT benv.BookId,env.EnvId,env.Environment,benv.StatusId
                             FROM [Runbook].[dbo].[BookEnvironment] benv
                                 JOIN [Runbook].[dbo].[UserDefinedEnvironments] env ON benv.envid = env.envid
                                 JOIN [Runbook].[dbo].[Book] book ON benv.bookid = book.bookid
-                            WHERE benv.TenantId = @TenantId AND book.UserId = @UserId";
+                            WHERE benv.TenantId = @TenantId OR book.UserId = @UserId";
 
             IEnumerable<Book> books = null;
             IEnumerable<Environments> envres = null;
