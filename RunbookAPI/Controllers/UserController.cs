@@ -239,7 +239,7 @@ namespace RunbookAPI.Controllers
             try
             {
                 string subject = "Invitation For RunBook Application";
-                string body = "Hi, <br /><br /> You have been invited for the RunBook application. <br /> Click on the below link to register <br /><a href='http://localhost:3000/signup'>http://localhost:3000/signup</a>";
+                string body = System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
                 _logger.LogInformation("Preparing an Email");
                await _mail.SendEmail(email,subject,body);
                 _logger.LogInformation("Email sent");
