@@ -2,6 +2,13 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Page Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Startup.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1"/>
@@ -13,5 +20,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.0.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0"/>
     <PackageReference Include="MailKit" Version="2.7.0"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Runbook.mdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="appsettings.json" />
   </ItemGroup>
 </Project>
