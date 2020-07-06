@@ -22,7 +22,7 @@ namespace RunbookAPI.Services
         {
             try{
             User userResult = null;
-            string sqlcmd = "SELECT * FROM [Runbook].[dbo].[User] where USEREMAIL=@useremail";
+            string sqlcmd = "SELECT * FROM [dbo].[User] where USEREMAIL=@useremail";
             using (IDbConnection con = _Idbconnection)
             {
                 con.Open();
