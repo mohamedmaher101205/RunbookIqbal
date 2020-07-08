@@ -40,8 +40,12 @@ namespace RunbookAPI
                 config.Filters.Add<RefreshTokenAttribute>();
             });
 
+            AppDomain.CurrentDomain.SetData("DataDirectory", "C:\\Projects\\Company\\RunBook\\RunBook-BE\\RunBook-API\\RunbookAPI");
+
+            Console.WriteLine("DB Connection  => "+this.Configuration.GetConnectionString("Default"));
+
             services.AddTransient<IDbConnection>((connection) =>
-            new SqlConnection(this.Configuration.GetConnectionString("Default")));
+                new SqlConnection(this.Configuration.GetConnectionString("Default")));
 
             services.AddScoped<IDataService,DataService>();
 
