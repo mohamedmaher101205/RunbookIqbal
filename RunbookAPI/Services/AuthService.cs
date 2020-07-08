@@ -33,7 +33,7 @@ namespace RunbookAPI.Services
             try{
                 string[] email = user.UserEmail.Split("@");
                 string domain = email[1];
-                string tenantcmd = @"SELECT TenantId FROM [Runbook].[dbo].[Tenant] WHERE Domain = @Domain";
+                string tenantcmd = @"SELECT TenantId FROM [dbo].[Tenant] WHERE Domain = @Domain";
 
                 var UserParams = new DynamicParameters();
                 UserParams.Add("@FirstName",user.FirstName);
@@ -52,7 +52,7 @@ namespace RunbookAPI.Services
 
                     if(res != null){
                         UserParams.Add("@TenantId",res.TenantId);
-                        userRegistered = con.Execute("[Runbook].[dbo].sp_CreateUser", UserParams, commandType: CommandType.StoredProcedure);
+                        userRegistered = con.Execute("[dbo].sp_CreateUser", UserParams, commandType: CommandType.StoredProcedure);
                         int createdUserId = UserParams.Get<int>("@RegisteredUserId");
                     }
                     else{
@@ -62,13 +62,13 @@ namespace RunbookAPI.Services
                         TenantParams.Add("@CreatedTenantId", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
                         TenantParams.Add("@TenantName",char.ToUpper(tenantName[0])+tenantName.Substring(1));
                         TenantParams.Add("@DomainName",domain);
-                        var createTenant = con.Execute("[Runbook].[dbo].sp_CreateTenant", TenantParams, commandType: CommandType.StoredProcedure);
+                        var createTenant = con.Execute("[dbo].sp_CreateTenant", TenantParams, commandType: CommandType.StoredProcedure);
                         int createdTenantId = TenantParams.Get<int>("@CreatedTenantId");
 
                         CopyDefaluts(createdTenantId,con);
                         
                         UserParams.Add("@TenantId",createdTenantId);
-                        userRegistered = con.Execute("[Runbook].[dbo].sp_CreateUser", UserParams, commandType: CommandType.StoredProcedure);
+                        userRegistered = con.Execute("[dbo].sp_CreateUser", UserParams, commandType: CommandType.StoredProcedure);
                         int createdUserId = UserParams.Get<int>("@RegisteredUserId");
                     }
                 }
@@ -125,17 +125,17 @@ namespace RunbookAPI.Services
 
         private void CopyDefaluts(int tenantId,IDbConnection con){
             try{
-                string defalutEnvs = @"SELECT Environment FROM [Runbook].[dbo].[Environments]";
-                string defaultAppTypes = @"SELECT AppTypeName FROM [Runbook].[dbo].[ApplicationType]";
-                string defalutResourceTypes = @"SELECT ResourceTypeName FROM [Runbook].[dbo].[ResourceTypes]";
+                string defalutEnvs = @"SELECT Environment FROM [dbo].[Environments]";
+                string defaultAppTypes = @"SELECT AppTypeName FROM [dbo].[ApplicationType]";
+                string defalutResourceTypes = @"SELECT ResourceTypeName FROM [dbo].[ResourceTypes]";
 
-                string tenantEnvsCmd = @"INSERT INTO [Runbook].[dbo].[userdefinedenvironments](Environment,TenantId) 
+                string tenantEnvsCmd = @"INSERT INTO [dbo].[userdefinedenvironments](Environment,TenantId) 
 	                                        VALUES(@Environment,@TenantId)";
 
-                string tenantAppTypeCmd = @"INSERT INTO [Runbook].[dbo].[UserDefinedapplicationType](AppTypeName,TenantId)
+                string tenantAppTypeCmd = @"INSERT INTO [dbo].[UserDefinedapplicationType](AppTypeName,TenantId)
                                             VALUES(@AppTypeName,@TenantId)";
 
-                string tenantResourceTypeCmd = @"INSERT INTO [Runbook].[dbo].[UserDefinedResourceTypes](ResourceTypeName,TenantId)
+                string tenantResourceTypeCmd = @"INSERT INTO [dbo].[UserDefinedResourceTypes](ResourceTypeName,TenantId)
 	                                            VALUES (@ResourceTypeName,@TenantId)";
 
                 List<Environments> tenantEnvs = new List<Environments>();

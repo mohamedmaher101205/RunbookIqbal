@@ -21,7 +21,7 @@ namespace RunbookAPI.Services
         public int LinkUsers(int tenantId,int[] userIds)
         {
             try{
-                string linkusercmd = @"INSERT INTO [Runbook].[dbo].[TenantUsers](TenantId,UserId) 
+                string linkusercmd = @"INSERT INTO [dbo].[TenantUsers](TenantId,UserId) 
                                         VALUES(@TenantId,@UserId)";
 
                 List<TenantUser> tenantUsers = new List<TenantUser>();
@@ -52,9 +52,9 @@ namespace RunbookAPI.Services
         public IEnumerable<User> GetLinkedUsers(int tenantId)
         {
             try{
-                string getUsersCmd = @"SELECT UserId,FirstName,LastName,UserEmail FROM [Runbook].[dbo].[User] 
+                string getUsersCmd = @"SELECT UserId,FirstName,LastName,UserEmail FROM [dbo].[User] 
                                         Where UserId in (
-                                            SELECT UserId FROM [Runbook].[dbo].[TenantUsers] WHERE TenantId = @TenantId
+                                            SELECT UserId FROM [dbo].[TenantUsers] WHERE TenantId = @TenantId
                                         )";
                 
                 IEnumerable<User> linkedUsers = null;
@@ -75,7 +75,7 @@ namespace RunbookAPI.Services
         public int CreateGroup(int tenantId, Group group)
         {
             try{
-                string createGroupCmd = @"INSERT INTO [Runbook].[dbo].[Group](TenantId,GroupName,Description) 
+                string createGroupCmd = @"INSERT INTO [dbo].[Group](TenantId,GroupName,Description) 
                                             VALUES(@TenantId,@GroupName,@Description)";
                 int groupCreated = 0;
                 using (IDbConnection con = _Idbconnection)
@@ -106,7 +106,7 @@ namespace RunbookAPI.Services
         public IEnumerable<Group> GetTenantGroups(int tenantId)
         {
             try{
-                string groupscmd = @"SELECT * FROM [Runbook].[dbo].[Group] WHERE TenantId = @TenantId";
+                string groupscmd = @"SELECT * FROM [dbo].[Group] WHERE TenantId = @TenantId";
 
                 IEnumerable<Group> groups = null;
 
@@ -126,7 +126,7 @@ namespace RunbookAPI.Services
         public int AddUsersToGroup(int groupId,int[] userIds)
         {
             try{
-                string groupusercmd = @"INSERT INTO [Runbook].[dbo].[GroupUsers](GroupId,UserId) 
+                string groupusercmd = @"INSERT INTO [dbo].[GroupUsers](GroupId,UserId) 
                                         VALUES(@GroupId,@UserId)";
 
                 List<GroupUser> tenantUsers = new List<GroupUser>();
@@ -157,9 +157,9 @@ namespace RunbookAPI.Services
         public IEnumerable<User> GetGroupUsers(int groupId)
         {
             try{
-                string getUsersCmd = @"SELECT UserId,FirstName,LastName,UserEmail FROM [Runbook].[dbo].[User] 
+                string getUsersCmd = @"SELECT UserId,FirstName,LastName,UserEmail FROM [dbo].[User] 
                                         Where UserId in (
-                                            SELECT UserId FROM [Runbook].[dbo].[GroupUsers] WHERE GroupId = @GroupId
+                                            SELECT UserId FROM [dbo].[GroupUsers] WHERE GroupId = @GroupId
                                         )";
                 
                 IEnumerable<User> groupUsers = null;
@@ -180,7 +180,7 @@ namespace RunbookAPI.Services
         public Tenant GetTenant(int tenantId)
         {
             try{
-                string getTenantCmd = @"SELECT TenantId,TenantName,Domain FROM [Runbook].[dbo].[Tenant]
+                string getTenantCmd = @"SELECT TenantId,TenantName,Domain FROM [dbo].[Tenant]
                                         WHERE TenantId = @TenantId";
 
                 Tenant tenant = null;
@@ -201,7 +201,7 @@ namespace RunbookAPI.Services
         public int CreateEnvironment(Environments env,int tenantId)
         {
             try{
-                string userDefinedEnv = @"INSERT INTO [Runbook].[dbo].[UserDefinedEnvironments](Environment,TenantId)
+                string userDefinedEnv = @"INSERT INTO [dbo].[UserDefinedEnvironments](Environment,TenantId)
                                             VALUES(@Environment,@TenantId)";
                 int insertedEnv = 0;
                 using (IDbConnection con = _Idbconnection)

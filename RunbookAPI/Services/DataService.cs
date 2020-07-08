@@ -38,7 +38,7 @@ namespace RunbookAPI.Services
 
         public bool CreateBook(Book book, int userId, int tenantId)
         {
-            string bookEnvcmd = @"INSERT INTO [Runbook].[dbo].[BookEnvironment](BookId,EnvId,TenantId)
+            string bookEnvcmd = @"INSERT INTO [dbo].[BookEnvironment](BookId,EnvId,TenantId)
                 VALUES(@BookId,@EnvId,@TenantId)";
            
             var bookparams = new DynamicParameters();
@@ -60,7 +60,7 @@ namespace RunbookAPI.Services
                 con.Open();
                  int createBookEnv=0;
                  var sqltrans = con.BeginTransaction();
-                    var createdbook = con.Execute("[Runbook].[dbo].sp_CreateBook", bookparams,sqltrans,0, commandType: CommandType.StoredProcedure);
+                    var createdbook = con.Execute("[dbo].sp_CreateBook", bookparams,sqltrans,0, commandType: CommandType.StoredProcedure);
                     int insertedBookId = bookparams.Get<int>("@InsertedBookId");
 
                     foreach(var env in book.Environments)
@@ -95,10 +95,10 @@ namespace RunbookAPI.Services
 
         public Book GetBook(int id)
         {
-            string bookcmd = @"SELECT * FROM [Runbook].[dbo].[BOOK] WHERE BookId=@BookId";
+            string bookcmd = @"SELECT * FROM [dbo].[BOOK] WHERE BookId=@BookId";
             string envcmd = @"SELECT benv.BookId,env.EnvId,env.Environment,benv.StatusId
-                            FROM [Runbook].[dbo].[BookEnvironment] benv
-                                JOIN [Runbook].[dbo].[UserDefinedEnvironments] env ON benv.envid = env.envid
+                            FROM [dbo].[BookEnvironment] benv
+                                JOIN [dbo].[UserDefinedEnvironments] env ON benv.envid = env.envid
                             WHERE benv.BookId = @BookId";
             try{
             Book book = null;
@@ -126,18 +126,18 @@ namespace RunbookAPI.Services
         public IEnumerable<Book> GetAllBooks(int userId,int tenantId)
         { 
             try{
-            string bookcmd = @"SELECT * FROM [Runbook].[dbo].[BOOK] WHERE  TenantId = @TenantId OR userId = @UserId";
+            string bookcmd = @"SELECT * FROM [dbo].[BOOK] WHERE  TenantId = @TenantId OR userId = @UserId";
 
             string appscmd = @"	SELECT bookapp.BookId,app.AppId,app.ApplicationName 
-                                FROM [Runbook].[dbo].[BookApplication] bookapp
-                                    JOIN [Runbook].[dbo].[Application] app ON bookapp.AppId = app.AppId
-                                    JOIN [Runbook].[dbo].[Book] book ON bookapp.BookId = book.BookId
+                                FROM [dbo].[BookApplication] bookapp
+                                    JOIN [dbo].[Application] app ON bookapp.AppId = app.AppId
+                                    JOIN [dbo].[Book] book ON bookapp.BookId = book.BookId
                                 WHERE book.TenantId = @TenantId OR book.UserId = @UserId";
 
             string envcmd = @"	SELECT benv.BookId,env.EnvId,env.Environment,benv.StatusId
-                            FROM [Runbook].[dbo].[BookEnvironment] benv
-                                JOIN [Runbook].[dbo].[UserDefinedEnvironments] env ON benv.envid = env.envid
-                                JOIN [Runbook].[dbo].[Book] book ON benv.bookid = book.bookid
+                            FROM [dbo].[BookEnvironment] benv
+                                JOIN [dbo].[UserDefinedEnvironments] env ON benv.envid = env.envid
+                                JOIN [dbo].[Book] book ON benv.bookid = book.bookid
                             WHERE benv.TenantId = @TenantId OR book.UserId = @UserId";
 
             IEnumerable<Book> books = null;
@@ -183,11 +183,11 @@ namespace RunbookAPI.Services
         {
             try{
 
-            string stagecmd = @"INSERT INTO [Runbook].[dbo].[STAGES](StageName,BookId,Description,EnvId,StatusId) 
+            string stagecmd = @"INSERT INTO [dbo].[STAGES](StageName,BookId,Description,EnvId,StatusId) 
                             VALUES(@StageName,@BookId,@Description,@EnvId,@StatusId)";
 
-            string getallenvcmd = @"SELECT bookenv.BookId,env.EnvID FROM [Runbook].[dbo].[BookEnvironment] bookenv
-                        JOIN [Runbook].[dbo].[userdefinedenvironments] env on bookenv.envId = env.envId
+            string getallenvcmd = @"SELECT bookenv.BookId,env.EnvID FROM [dbo].[BookEnvironment] bookenv
+                        JOIN [dbo].[userdefinedenvironments] env on bookenv.envId = env.envId
                         WHERE bookenv.bookId = @BookId";
 
             int stageCreated = 0;
@@ -237,7 +237,7 @@ namespace RunbookAPI.Services
         public IEnumerable<Stage> GetAllStages(int bookId,int envId)
         {
             try{
-            string stagescmd = @"SELECT * FROM [Runbook].[dbo].[STAGES] WHERE BookId=@BookId AND EnvId = @EnvId";
+            string stagescmd = @"SELECT * FROM [dbo].[STAGES] WHERE BookId=@BookId AND EnvId = @EnvId";
 
             IEnumerable<Stage> stages = null;
             using (IDbConnection con = _Idbconnection)
@@ -255,10 +255,10 @@ namespace RunbookAPI.Services
 
         public bool CreateTask(Task task,string stageName,int bookId)
         {
-            string taskcmd = @"INSERT INTO [Runbook].[dbo].[Task](TaskName,StageId,Description,CompletedByDate,AssignedTo,StatusId) 
+            string taskcmd = @"INSERT INTO [dbo].[Task](TaskName,StageId,Description,CompletedByDate,AssignedTo,StatusId) 
                 VALUES(@TaskName,@StageId,@Description,@CompletedByDate,@AssignedTo,@StatusId)";
 
-            string envcmd = @"SELECT * FROM [Runbook].[dbo].[STAGES]
+            string envcmd = @"SELECT * FROM [dbo].[STAGES]
                             WHERE BookId = @BookId AND StageName = @StageName";
 
             int taskCreated = 0;
@@ -303,7 +303,7 @@ namespace RunbookAPI.Services
 
         public IEnumerable<Task> GetAllTasks(int stageId)
         {
-            string taskscmd = @"SELECT * FROM [Runbook].[dbo].[Task] WHERE StageId=@StageId";
+            string taskscmd = @"SELECT * FROM [dbo].[Task] WHERE StageId=@StageId";
 
             IEnumerable<Task> tasks = null;
             using (IDbConnection con = _Idbconnection)
@@ -316,7 +316,7 @@ namespace RunbookAPI.Services
         }
 
         public IEnumerable<Status> GetStatuses(){
-            string statuscmd = @"SELECT * FROM [Runbook].[dbo].[STATUS]";
+            string statuscmd = @"SELECT * FROM [dbo].[STATUS]";
             IEnumerable<Status> statuses = null;
             using (IDbConnection con = _Idbconnection)
             {
@@ -329,7 +329,7 @@ namespace RunbookAPI.Services
 
         public bool UpdateTaskStatus(int[] taskids,int statusId)
         {
-            string taskupdatecmd = @"UPDATE [Runbook].[dbo].[Task] SET StatusId = @StatusId WHERE TaskId IN @ids";
+            string taskupdatecmd = @"UPDATE [dbo].[Task] SET StatusId = @StatusId WHERE TaskId IN @ids";
             int taskidupdate = 0;
             if(statusId > 2){
                 statusId = 2;
@@ -359,8 +359,8 @@ namespace RunbookAPI.Services
         public bool UpdateStageStatus(int stageid, int nextStageId,int statusId)
         {
             try{
-            string stageupdatecmd = @"UPDATE [Runbook].[dbo].[Stages] SET StatusId = @StatusId WHERE StageId = @ID";
-            string nextstagestatus = @"UPDATE [Runbook].[dbo].[Stages] SET StatusId = 1 WHERE StageId = @NextId";
+            string stageupdatecmd = @"UPDATE [dbo].[Stages] SET StatusId = @StatusId WHERE StageId = @ID";
+            string nextstagestatus = @"UPDATE [dbo].[Stages] SET StatusId = 1 WHERE StageId = @NextId";
             int stagestatusupdate = 0, nextStageStatusUpdate = 0;
             using (IDbConnection con = _Idbconnection)
             {
@@ -393,7 +393,7 @@ namespace RunbookAPI.Services
 
         public IEnumerable<Environments> GetAllEnvironments(int tenantId)
         {
-            string envcmd = @"SELECT * FROM [Runbook].[dbo].[userdefinedenvironments] WHERE TenantId = @TenantId";
+            string envcmd = @"SELECT * FROM [dbo].[userdefinedenvironments] WHERE TenantId = @TenantId";
 
             IEnumerable<Environments> envs = null;
 
@@ -408,7 +408,7 @@ namespace RunbookAPI.Services
 
         public bool UpdateBookStatus(int bookId,int envId,int statusId)
         {
-            string updatecmd = @"UPDATE [Runbook].[dbo].[BookEnvironment] SET StatusId = @StatusId 
+            string updatecmd = @"UPDATE [dbo].[BookEnvironment] SET StatusId = @StatusId 
                                 WHERE BookId = @BookId AND EnvId = @EnvId";
             int affectedRows = 0;
             using (IDbConnection con = _Idbconnection)
@@ -439,11 +439,11 @@ namespace RunbookAPI.Services
 
         public int DeleteTasks(int bookId,string taskName)
         {
-            string gettaskids = @"SELECT t.TaskId FROM [Runbook].[dbo].[Task] t
-                                    JOIN [Runbook].[dbo].[STAGES] stg ON stg.StageId = t.StageId
+            string gettaskids = @"SELECT t.TaskId FROM [dbo].[Task] t
+                                    JOIN [dbo].[STAGES] stg ON stg.StageId = t.StageId
                                 WHERE stg.BookId = @BookId AND t.TaskName = @TaskName";
 
-            string deletetask = @"DELETE FROM [Runbook].[dbo].[Task] WHERE TaskId in @TaskIds";
+            string deletetask = @"DELETE FROM [dbo].[Task] WHERE TaskId in @TaskIds";
             
             IEnumerable<int> taskids = null;
             int taskdeleted = 0;
@@ -470,7 +470,7 @@ namespace RunbookAPI.Services
         {
             try{
                 string userscmd = @"SELECT UserId,FirstName,LastName,UserEmail FROM 
-                                    [RunBook].[dbo].[User]";
+                                    [dbo].[User]";
 
                 IEnumerable<User> users = null;
 

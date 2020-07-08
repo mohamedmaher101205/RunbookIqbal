@@ -21,7 +21,7 @@ namespace RunbookAPI.Services
         public bool CreateApplication(Application app,int tenantId)
         {
             try{
-                string appResourcesCmd = @"INSERT INTO [Runbook].[dbo].[ApplicationResources](AppId,ResourceId,TenantId)
+                string appResourcesCmd = @"INSERT INTO [dbo].[ApplicationResources](AppId,ResourceId,TenantId)
 	                                    VALUES(@AppId,@ResourceId,@TenantId)";
 
                 var appParameters = new DynamicParameters();
@@ -30,7 +30,7 @@ namespace RunbookAPI.Services
                 appParameters.Add("@TenantId",tenantId);
                 appParameters.Add("@CreatedAppId", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
             
-                string apptypecmd = @"SELECT AppTypeId FROM [Runbook].[dbo].[UserDefinedapplicationType] 
+                string apptypecmd = @"SELECT AppTypeId FROM [dbo].[UserDefinedapplicationType] 
                                         WHERE AppTypeName = @AppTypeName AND TenantId = @TenantId";
                 
                 int appcreated = 0;
@@ -43,7 +43,7 @@ namespace RunbookAPI.Services
                     ApplicationType apptype = con.QueryFirstOrDefault<ApplicationType>(apptypecmd,new {AppTypeName = app.AppTypeName, TenantId = tenantId});
                     
                     appParameters.Add("@AppTypeId",apptype.AppTypeId);
-                    appcreated = con.Execute("[Runbook].[dbo].sp_CreateApplication", appParameters, commandType: CommandType.StoredProcedure);
+                    appcreated = con.Execute("[dbo].sp_CreateApplication", appParameters, commandType: CommandType.StoredProcedure);
                     int createdAppId = appParameters.Get<int>("@CreatedAppId");
                     
                     foreach (var resType in app.Resources)
@@ -74,12 +74,12 @@ namespace RunbookAPI.Services
         {
             string getappscmd = @"SELECT app.[AppId], app.[ApplicationName],app.[Description],
                                     apptype.[AppTypeName],app.[TenantId] 
-                                        FROM [Runbook].[dbo].[Application] app
-                                        JOIN [Runbook].[dbo].[UserDefinedApplicationType] apptype ON app.[AppTypeId] = apptype.[AppTypeId] 
+                                        FROM [dbo].[Application] app
+                                        JOIN [dbo].[UserDefinedApplicationType] apptype ON app.[AppTypeId] = apptype.[AppTypeId] 
                                     WHERE app.TenantId = @TenantId";
 
-            string resourcesCmd = @"SELECT res.*,appres.AppId FROM [Runbook].[dbo].[Resources] res
-                                        JOIN [Runbook].[dbo].[ApplicationResources] appres on res.ResourceId = appres.ResourceId
+            string resourcesCmd = @"SELECT res.*,appres.AppId FROM [dbo].[Resources] res
+                                        JOIN [dbo].[ApplicationResources] appres on res.ResourceId = appres.ResourceId
                                     Where res.TenantId = @TenantId";
 
             IEnumerable<Application> apps = null;
@@ -106,7 +106,7 @@ namespace RunbookAPI.Services
 
         public IEnumerable<ApplicationType> GetApplicationTypes(int tenantId)
         {
-            string apptypecmd = @"SELECT * FROM [Runbook].[dbo].[UserDefinedapplicationType] 
+            string apptypecmd = @"SELECT * FROM [dbo].[UserDefinedapplicationType] 
                                         WHERE tenantId = @TenantID";
 
             IEnumerable<ApplicationType> apptypes = null;
@@ -122,8 +122,8 @@ namespace RunbookAPI.Services
 
         public int AddApplications(int bookId,int[] appIds)
         {
-            string appinsertcmd = @"INSERT INTO [Runbook].[dbo].[BookApplication](BookId,AppId) VALUES(@BookId,@AppId)";
-            string deleteExistingApps = @"DELETE FROM [Runbook].[dbo].[BookApplication] WHERE BookId = @BookId";
+            string appinsertcmd = @"INSERT INTO [dbo].[BookApplication](BookId,AppId) VALUES(@BookId,@AppId)";
+            string deleteExistingApps = @"DELETE FROM [dbo].[BookApplication] WHERE BookId = @BookId";
 
             List<object> appAndBook = new List<object>();
             for(int i=0;i<appIds.Length;i++){
@@ -151,9 +151,9 @@ namespace RunbookAPI.Services
         public IEnumerable<Application> GetApplicationByBookId(int bookId)
         {
             string getapps = @"SELECT app.AppId,app.ApplicationName,app.Description,apptype.appTypeName,app.TenantId
-                                FROM [Runbook].[dbo].[Application] app
-                                JOIN [Runbook].[dbo].[BookApplication] bookapp ON app.AppId = bookapp.AppId
-                                JOIN [Runbook].[dbo].[UserDefinedApplicationType] apptype ON app.[AppTypeId] = apptype.[AppTypeId]
+                                FROM [dbo].[Application] app
+                                JOIN [dbo].[BookApplication] bookapp ON app.AppId = bookapp.AppId
+                                JOIN [dbo].[UserDefinedApplicationType] apptype ON app.[AppTypeId] = apptype.[AppTypeId]
                                 WHERE bookapp.BookId = @BookId";
 
             IEnumerable<Application> apps = null;
@@ -170,7 +170,7 @@ namespace RunbookAPI.Services
         public int CreateCustomApplicationType(ApplicationType appType,int tenantId)
         {
             try{
-                string appTypeCmd = @"INSERT INTO [Runbook].[dbo].[UserDefinedApplicationType](AppTypeName,TenantId)
+                string appTypeCmd = @"INSERT INTO [dbo].[UserDefinedApplicationType](AppTypeName,TenantId)
                                         VALUES (@AppTypeName,@TenantId)";
                 
                 int insertedAppType = 0;
@@ -193,7 +193,7 @@ namespace RunbookAPI.Services
         public int CreateResourceType(ResourceType resourceType,int tenantId)
         {
             try{
-                string resourceTypeCmd = @"INSERT INTO [Runbook].[dbo].[UserDefinedResourceTypes](ResourceTypeName,TenantId)
+                string resourceTypeCmd = @"INSERT INTO [dbo].[UserDefinedResourceTypes](ResourceTypeName,TenantId)
 	                                        VALUES (@ResourceTypeName,@TenantId)";
 
                 int insertedResourceType = 0;
@@ -217,7 +217,7 @@ namespace RunbookAPI.Services
         public IEnumerable<ResourceType> GetResourceTypes(int tenantId)
         {
             try{
-                string resourceTypesCmd = @"SELECT * FROM [Runbook].[dbo].[UserDefinedResourceTypes] 
+                string resourceTypesCmd = @"SELECT * FROM [dbo].[UserDefinedResourceTypes] 
                                             WHERE TenantId = @TenantId";
 
                 IEnumerable<ResourceType> resourceTypes = null;
@@ -238,7 +238,7 @@ namespace RunbookAPI.Services
         public int CreateResource(Resource resource,int tenantId)
         {
             try{
-                string resourceCmd = @"INSERT INTO [Runbook].[dbo].[Resources](ResourceName,Description,ResourceTypeId,TenantId)
+                string resourceCmd = @"INSERT INTO [dbo].[Resources](ResourceName,Description,ResourceTypeId,TenantId)
 	                                    VALUES(@ResourceName,@Description,@ResourceTypeId,@TenantId)";
 
                 int insertedResource = 0;
@@ -264,7 +264,7 @@ namespace RunbookAPI.Services
         public IEnumerable<Resource> GetAllResources(int tenantId)
         {
             try{
-                string resourcesCmd = @"SELECT * FROM [Runbook].[dbo].[Resources] WHERE TenantId = @TenantId";
+                string resourcesCmd = @"SELECT * FROM [dbo].[Resources] WHERE TenantId = @TenantId";
 
                 IEnumerable<Resource> resources = null;
 
