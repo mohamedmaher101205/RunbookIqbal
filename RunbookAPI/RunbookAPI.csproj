@@ -2,30 +2,30 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
-  
   <ItemGroup>
-    <Page Include="Program.cs" />
+    <Page Include="Program.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Startup.cs" />
+    <Page Include="Startup.cs"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
-    <PackageReference Include="Dapper" Version="2.0.35" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.5.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
-    <PackageReference Include="MailKit" Version="2.7.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0"/>
+    <PackageReference Include="Dapper" Version="2.0.35"/>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.0"/>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.5.0"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.0.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0"/>
+    <PackageReference Include="MailKit" Version="2.7.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0"/>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Runbook.mdf" />
+    <Resource Include="Runbook.mdf"/>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="appsettings.json" />
+    <EmbeddedResource Include="appsettings.json"/>
   </ItemGroup>
   <ItemGroup>
     <None Update="Runbook.mdf">

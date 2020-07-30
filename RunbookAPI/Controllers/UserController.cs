@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Net;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RunbookAPI.Models;
-using RunbookAPI.Services;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Authorization;
-using RunbookAPI.Filters;
+using Runbook.API.Filters;
+using Runbook.API.Templates;
+using Runbook.Models;
+using Runbook.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace RunbookAPI.Controllers
+namespace Runbook.API.Controllers
 {
     [Authorize]
     [ApiController]
@@ -20,235 +17,104 @@ namespace RunbookAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private IUserService _user;
-        private ILogger _logger;
-        private IMailService _mail;
+        private readonly IUserService _user;
+        private readonly ILogger _logger;
+        private readonly IMailService _mail;
 
-        public UserController(ILogger<UserController> logger,IUserService user,IMailService mail)
+        public UserController(ILogger<UserController> logger, IUserService user, IMailService mail)
         {
             _logger = logger;
             _user = user;
             _mail = mail;
         }
 
-        [HttpPost]
-        [Route("addusers/{tenantId}/{userIds}")]
-        public IActionResult LinkUsers(int tenantId,string userIds)
-        {
-            try
-            {
-                if(tenantId > 0){
-                    int[] UserIds = Array.ConvertAll(userIds.Split(','), int.Parse);
-                    int res = _user.LinkUsers(tenantId,UserIds);
-                    if(res > 0){
-                        return Ok($"{res} rows inserted");
-                    }
-                    return Ok($"rows failed to insert");
-                }
-                else{
-                    _logger.LogError($"Invalid TenantId in LinkUsers : {tenantId}");
-                    return BadRequest($"Invalid TenantId : {tenantId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Internal server Error in LinkUsers : {ex}");
-                return StatusCode(500,"Internal Server Error");
-            }
-        }
-
+        /// <summary>
+        /// Get Tenant information by TenantId
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
         [HttpGet]
-        [Route("linkedusers/{tenantId}")]
-        public ActionResult<IEnumerable<User>> GetLinkedUsersForTenant(int tenantId)
-        {
-            try{
-                if(tenantId > 0){
-                    var response = _user.GetLinkedUsers(tenantId);
-                    if(response != null){
-                        return Ok(response);
-                    }
-                    else{
-                        return Ok("No linked users found for this tenant");
-                    }
-                }
-                else{
-                    _logger.LogError($"Invalid tenantId in GetLinkedUsersForTenant : {tenantId}");
-                    return BadRequest($"Invalid tenantId : {tenantId}");
-                }
-            }
-            catch(Exception ex){
-                _logger.LogError($"Internal Server Error in GetLinkedUsersForTenant : {ex}");
-                return StatusCode(500,"Internal Server Error");
-            }
-        }
-        
-        [HttpPost]
-        [Route("group/{tenantId}")]
-        public ActionResult CreateGroup([FromBody] Group group,int tenantId)
-        {
-            try{
-                if(tenantId > 0 && !string.IsNullOrEmpty(group.GroupName)){
-                    var res = _user.CreateGroup(tenantId,group);
-                    if(res > 0){
-                        return Ok("Group created successfully");
-                    }
-                    else{
-                        return Ok("Book Creation unsuccessfull");
-                    }
-                }
-                else{
-                    _logger.LogError($"Invalid tenantId : {tenantId} or GroupName : {group.GroupName} in CreateGroup");
-                    return BadRequest($"Invalid tenantId : {tenantId} or GroupName : {group.GroupName}");
-                }
-            }
-            catch(Exception ex){
-                _logger.LogError($"Internal server error in CreateGroup : {ex}");
-                return StatusCode(500,"Internal server error");
-            }
-        }
-
-        [HttpGet]
-        [Route("groups/{tenantId}")]
-        public ActionResult<IEnumerable<Group>> GetTenantGroups(int tenantId)
-        {
-            try{
-                if(tenantId > 0){
-                    var res = _user.GetTenantGroups(tenantId);
-                    if(res != null){
-                        return Ok(res);
-                    }
-                    else{
-                        return Ok($"No Groups for TenantId : {tenantId}");
-                    }
-                }
-                else{
-                    _logger.LogError($"Invalid TenantId : {tenantId} in GetTenantGroups");
-                    return BadRequest($"Invalid TenantId : {tenantId}");
-                }
-            }
-            catch(Exception ex){
-                _logger.LogError($"Internal server error in GetTenantGroups : {ex}");
-                return StatusCode(500,"Internal server error");
-            }
-        }
-
-        [HttpPost]
-        [Route("addgroupusers/{groupId}/{userIds}")]
-        public IActionResult AddUsersToGroup(int groupId,string userIds)
-        {
-            try
-            {
-                if(groupId > 0){
-                    int[] UserIds = Array.ConvertAll(userIds.Split(','), int.Parse);
-                    int res = _user.AddUsersToGroup(groupId,UserIds);
-                    if(res > 0){
-                        return Ok($"{res} rows inserted");
-                    }
-                    return Ok($"rows failed to insert");
-                }
-                else{
-                    _logger.LogError($"Invalid GroupId in AddUsersToGroup : {groupId}");
-                    return BadRequest($"Invalid GroupId : {groupId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Internal server Error in AddUsersToGroup : {ex}");
-                return StatusCode(500,"Internal Server Error");
-            }
-        }
-
-        [HttpGet]
-        [Route("groupusers/{groupId}")]
-        public ActionResult<IEnumerable<User>> GetGroupUsers(int groupId)
-        {
-            try{
-                if(groupId > 0){
-                    var response = _user.GetGroupUsers(groupId);
-                    if(response != null){
-                        return Ok(response);
-                    }
-                    else{
-                        return Ok("No users found for this Group");
-                    }
-                }
-                else{
-                    _logger.LogError($"Invalid tenantId in GetGroupUsers : {groupId}");
-                    return BadRequest($"Invalid tenantId : {groupId}");
-                }
-            }
-            catch(Exception ex){
-                _logger.LogError($"Internal Server Error in GetGroupUsers : {ex}");
-                return StatusCode(500,"Internal Server Error");
-            }
-        }
-
-        [HttpGet]
-        [Route("tenant/{tenantId}")]
+        [Route("GetTenant/{tenantId}")]
         public ActionResult<Tenant> GetTenant(int tenantId)
         {
-            try{
-                if(tenantId > 0){
+            try
+            {
+                if (tenantId > 0)
+                {
                     var response = _user.GetTenant(tenantId);
-                    if(response != null){
+                    if (response != null)
+                    {
                         return Ok(response);
                     }
-                    else{
-                        return StatusCode(201,"No Tenants for this userId");
+                    else
+                    {
+                        return StatusCode(201, "No Tenants for this userId");
                     }
-                }else{
+                }
+                else
+                {
                     _logger.LogError($"Invalid UserId : {tenantId} in GetTenant");
                     return BadRequest($"Invalid UserId : {tenantId}");
                 }
             }
-            catch(Exception ex){
+            catch (Exception ex)
+            {
                 _logger.LogError($"Internal Server Error in GetTenant : {ex}");
-                return StatusCode(500,"Internal Server Error");
+                return StatusCode(500, "Internal Server Error");
             }
         }
 
         [HttpPost]
-        [Route("customenvironments/{tenantId}")]
-        public IActionResult CreateCustomEnvironment([FromBody] Environments env,int tenantId)
-        {
-            try
-            {
-                if(tenantId > 0){
-                    int res = _user.CreateEnvironment(env,tenantId);
-                    if(res > 0){
-                        return Ok($"{res} Environments inserted");
-                    }
-                    return Ok($"Environments failed to insert");
-                }
-                else{
-                    _logger.LogError($"Invalid TenantId in CreateCustomEnvironment : {tenantId}");
-                    return BadRequest($"Invalid TenantId : {tenantId}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Internal server Error in CreateCustomEnvironment : {ex}");
-                return StatusCode(500,"Internal Server Error");
-            }
-        }
-
-        [HttpGet]
-        [Route("sendemail/{email}")]
+        [Route("InviteUserByEmail/{email}")]
         public async Task<IActionResult> SendEMail(string email)
         {
             try
             {
                 string subject = "Invitation For RunBook Application";
-                string body = System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
+                string body = InviteUserTemplate.emailTemplate;
+                //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
                 _logger.LogInformation("Preparing an Email");
-               await _mail.SendEmail(email,subject,body);
+                await _mail.SendEmail(email, subject, body);
                 _logger.LogInformation("Email sent");
                 return Ok("Email sent successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in SendEMail : {ex}");
-                return StatusCode(500,"Error while sending Email");
+                return StatusCode(500, $"Error while sending Email: {ex}");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetUsers/{tenantId}")]
+        public ActionResult<IEnumerable<User>> GetAllUsers(int tenantId)
+        {
+            try
+            {
+                if (tenantId > 0)
+                {
+                    var response = _user.GetAllUsers(tenantId);
+                    if (response != null)
+                    {
+                        return Ok(response);
+                    }
+                    else
+                    {
+                        _logger.LogError("Empty response in GetAllUsers");
+                        return Ok(null);
+                    }
+                }
+                else
+                {
+                    _logger.LogError($"Invalid tenantId in GetAllUsers : {tenantId}");
+                    return BadRequest($"Invalid tenantId : {tenantId}");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal Server Error in GetAllUsers : {ex}");
+                return StatusCode(500, "Internal server Error");
             }
         }
     }
