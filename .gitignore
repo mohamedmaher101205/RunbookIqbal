@@ -74,3 +74,5 @@ About
 
 *.dll
 *.pdb
+
+appsettings.Local.json
