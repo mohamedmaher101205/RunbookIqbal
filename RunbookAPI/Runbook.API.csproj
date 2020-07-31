@@ -22,9 +22,6 @@
     <PackageReference Include="SendGrid" Version="9.19.0" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Runbook.mdf" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="appsettings.json" />
   </ItemGroup>
   <ItemGroup>
