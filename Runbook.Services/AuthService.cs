@@ -77,16 +77,16 @@ namespace Runbook.Services
                     }
                     else
                     {
-                        return "User with same email already exist";
+                        return "User exist";
                     }
                 }
                 if (userRegistered > 0)
                 {
-                    return "User registered successfully";
+                    return "successfull";
                 }
                 else
                 {
-                    return "User registration failed";
+                    return "failed";
                 }
             }
             catch (Exception ex)
