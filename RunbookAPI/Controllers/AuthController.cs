@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Runbook.Models;
@@ -7,6 +8,7 @@ using System;
 namespace Runbook.API.Controllers
 {
     [ApiController]
+    [AllowAnonymous]
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {

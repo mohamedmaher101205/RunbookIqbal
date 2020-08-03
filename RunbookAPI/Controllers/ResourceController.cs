@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Runbook.API.Filters;
 using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
@@ -11,7 +10,6 @@ namespace Runbook.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [RefreshToken]
     [Route("[controller]")]
     public class ResourceController : ControllerBase
     {

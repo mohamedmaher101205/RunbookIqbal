@@ -38,6 +38,6 @@ namespace Runbook.API
             services.AddTransient<IMailService, MailService>();
 
             return services;
-        } 
+        }
     }
 }

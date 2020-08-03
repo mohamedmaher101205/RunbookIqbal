@@ -1,18 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Runbook.API.Filters;
 using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Runbook.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [RefreshToken]
     [Route("[controller]")]
     public class TaskController : ControllerBase
     {
