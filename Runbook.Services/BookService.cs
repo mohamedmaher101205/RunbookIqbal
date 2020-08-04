@@ -45,7 +45,7 @@ namespace Runbook.Services
                     {
                         BookId = insertedBookId,
                         EnvId = env.EnvId,
-                        TenantId = tenantId
+                        TenantId = book.TenantId
                     }, sqltrans
                     );
                 }
