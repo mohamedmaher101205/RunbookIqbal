@@ -16,7 +16,7 @@ namespace Runbook.Services
             _Idbconnection = dbConnection;
         }
 
-        public bool CreateBook(Book book, int userId, int tenantId)
+        public bool CreateBook(Book book)
         {
             string bookEnvcmd = @"INSERT INTO [dbo].[BookEnvironment](BookId,EnvId,TenantId)
                 VALUES(@BookId,@EnvId,@TenantId)";
@@ -24,9 +24,9 @@ namespace Runbook.Services
             var bookparams = new DynamicParameters();
             bookparams.Add("@BookName", book.BookName);
             bookparams.Add("@TargetedDate", book.TargetedDate);
-            bookparams.Add("@UserId", userId);
+            bookparams.Add("@UserId", book.UserId);
             bookparams.Add("@Description", book.Description);
-            bookparams.Add("@TenantId", tenantId);
+            bookparams.Add("@TenantId", book.TenantId);
             bookparams.Add("@InsertedBookId", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
             using (IDbConnection con = _Idbconnection)

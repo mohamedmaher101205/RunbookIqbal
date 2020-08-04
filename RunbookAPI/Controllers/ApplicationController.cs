@@ -29,12 +29,8 @@ namespace Runbook.API.Controllers
             try
             {
                 if (!string.IsNullOrEmpty(app.ApplicationName))
-                {
-                    var currentUser = HttpContext.User;
-                    //int tenantId=int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "TenantId").Value);
-
+                {                   
                     var res = _app.CreateApplication(app, tenantId);
-
                     if (res)
                     {
                         return Ok("Application created successfully");

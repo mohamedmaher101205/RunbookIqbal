@@ -5,7 +5,7 @@ namespace Runbook.Services.Interfaces
 {
     public interface IBookService
     {
-        bool CreateBook(Book book, int userId, int tenantId);
+        bool CreateBook(Book book);
 
         Book GetBook(int id);
 

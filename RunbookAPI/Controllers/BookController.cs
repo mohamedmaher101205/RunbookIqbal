@@ -29,11 +29,7 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                var currentUser = HttpContext.User;
-                int userId = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "UserId").Value);
-                int tenantId = int.Parse(currentUser.Claims.FirstOrDefault(c => c.Type == "TenantId").Value);
-
-                var res = _book.CreateBook(book, userId, tenantId);
+                var res = _book.CreateBook(book);
 
                 if (res)
                 {
