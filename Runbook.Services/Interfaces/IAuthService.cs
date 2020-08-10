@@ -10,5 +10,11 @@ namespace Runbook.Services.Interfaces
 
         AuthRequest OpenIdAuthenticateUser(User user);
 
+        bool checkExistingUser  (User user);
+
+        string OTPGenrate();
+
+        string ResetPassword(User user);
+
     }
 }

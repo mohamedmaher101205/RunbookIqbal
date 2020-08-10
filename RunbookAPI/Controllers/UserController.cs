@@ -69,7 +69,7 @@ namespace Runbook.API.Controllers
             try
             {
                 string subject = "Invitation For RunBook Application";
-                string body = InviteUserTemplate.emailTemplate;
+                string body = EmailTemplate.InviteUserTemplate();
                 //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
                 _logger.LogInformation("Preparing an Email");
                 await _mail.SendEmail(email, subject, body);
