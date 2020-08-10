@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This ResourceController class have methods to performing create a resource, create a resource type
+    /// get all resource,get all resource type
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -16,13 +20,23 @@ namespace Runbook.API.Controllers
         private readonly IResourceService _resource;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="resource"></param>
         public ResourceController(ILogger<ResourceController> logger, IResourceService resource)
         {
             _logger = logger;
             _resource = resource;
         }
 
-
+        /// <summary>
+        /// create a resource
+        /// </summary>
+        /// <param name="resourceType"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateResourceType/{tenantId}")]
         public IActionResult CreateResourceType([FromBody] ResourceType resourceType, int tenantId)
@@ -55,6 +69,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Read all resource list
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of resource type</returns>
         [HttpGet]
         [Route("GetResourceTypes/{tenantId}")]
         public ActionResult<IEnumerable<ResourceType>> GetAllResourceTypes(int tenantId)
@@ -78,6 +97,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// create a resource
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateResource/{tenantId}")]
         public IActionResult CreateResource([FromBody] Resource resource, int tenantId)
@@ -110,6 +135,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Read all resource list
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of resource</returns>
         [HttpGet]
         [Route("GetResources/{tenantId}")]
         public ActionResult<IEnumerable<Resource>> GetAllResources(int tenantId)

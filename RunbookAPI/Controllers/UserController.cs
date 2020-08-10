@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This UserController class have methods to performing to select particular tenant, 
+    /// get all users,send email to the user
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -19,6 +23,12 @@ namespace Runbook.API.Controllers
         private readonly ILogger _logger;
         private readonly IMailService _mail;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="user"></param>
+        /// <param name="mail"></param>
         public UserController(ILogger<UserController> logger, IUserService user, IMailService mail)
         {
             _logger = logger;
@@ -62,6 +72,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// send email to invite the user
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>sucess message</returns>
         [HttpPost]
         [Route("InviteUserByEmail/{email}")]
         public async Task<IActionResult> SendEMail(string email)
@@ -83,6 +98,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// read all users list
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>list of users</returns>
         [HttpGet]
         [Route("GetUsers/{tenantId}")]
         public ActionResult<IEnumerable<User>> GetAllUsers(int tenantId)

@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This ApplicationController class used to create Application and tenant, Read particular application or all, Read particular 
+    /// application type or all, add application to book, read application using book
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -16,6 +20,11 @@ namespace Runbook.API.Controllers
         private readonly IApplicationService _app;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="app"></param>
         public ApplicationController(ILogger<ApplicationController> logger, IApplicationService app)
         {
             _logger = logger;
@@ -27,7 +36,7 @@ namespace Runbook.API.Controllers
         /// </summary>
         /// <param name="app"></param>
         /// <param name="tenantId"></param>
-        /// <returns></returns>
+        /// <returns>Success message</returns>
         /// <respone code="200">Returns successfull message if application created successfully</respone>
         /// <response code="400">Returns Bad request if error occurs while creating application</response>
         /// <response code="500">Returns Internal server error, if any error occurs</response>
@@ -38,7 +47,7 @@ namespace Runbook.API.Controllers
             try
             {
                 if (!string.IsNullOrEmpty(app.ApplicationName))
-                {                   
+                {
                     var res = _app.CreateApplication(app, tenantId);
                     if (res)
                     {
@@ -66,7 +75,7 @@ namespace Runbook.API.Controllers
         /// Get all the applications for a tenant by tenantId
         /// </summary>
         /// <param name="tenantId"></param>
-        /// <returns></returns>
+        /// <returns>List of all application</returns>
         /// <response code="200">Return list of applications</response>
         /// <response code="400">If tenantId is invalid</response>
         [HttpGet]
@@ -96,7 +105,7 @@ namespace Runbook.API.Controllers
         /// Get the application types available for a tenant by tenantId
         /// </summary>
         /// <param name="tenantId"></param>
-        /// <returns></returns>
+        /// <returns>List of all application types</returns>
         [HttpGet]
         [Route("GetApplicationTypes/{tenantId}")]
         public ActionResult<IEnumerable<ApplicationType>> GetApplicationTypes(int tenantId)
@@ -117,7 +126,7 @@ namespace Runbook.API.Controllers
         /// </summary>
         /// <param name="bookId"></param>
         /// <param name="appIds"></param>
-        /// <returns></returns>
+        /// <returns>Numbers of rows inserted</returns>
         [HttpPost]
         [Route("AddApplicationToBook/{bookId}/{appIds}")]
         public IActionResult AddApplicationToBook(int bookId, string appIds)
@@ -156,7 +165,7 @@ namespace Runbook.API.Controllers
         /// Get applications that are added to book by passing parameter bookId
         /// </summary>
         /// <param name="bookId"></param>
-        /// <returns></returns>
+        /// <returns>List of all application</returns>
         [HttpGet]
         [Route("GetBookApplications/{bookId}")]
         public ActionResult<IEnumerable<Application>> GetApplicationByBookId(int bookId)
@@ -185,7 +194,7 @@ namespace Runbook.API.Controllers
         /// </summary>
         /// <param name="appType"></param>
         /// <param name="tenantId"></param>
-        /// <returns></returns>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateApplicationType/{tenantId}")]
         public IActionResult CreateApplicationType([FromBody] ApplicationType appType, int tenantId)

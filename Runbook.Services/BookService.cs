@@ -7,15 +7,28 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This BookService class have methods to performing create a book,select particular book, 
+    /// get all books,get book Statuses,modify Book by environment
+    /// </summary>
     public class BookService : IBookService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        /// This constructor is to inject IDBConnection using constructor dependency injuction
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public BookService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        /// create new book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns>Success message</returns>       
         public bool CreateBook(Book book)
         {
             string bookEnvcmd = @"INSERT INTO [dbo].[BookEnvironment](BookId,EnvId,TenantId)
@@ -67,6 +80,11 @@ namespace Runbook.Services
 
         }
 
+        /// <summary>
+        /// select particular book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>book details</returns>
         public Book GetBook(int id)
         {
             string bookcmd = @"SELECT * FROM [dbo].[BOOK] WHERE BookId=@BookId";
@@ -99,6 +117,12 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// select all books
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>List of books</returns>
         public IEnumerable<Book> GetAllBooks(int userId, int tenantId)
         {
             try
@@ -159,6 +183,10 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// status of books
+        /// </summary>
+        /// <returns>book status</returns>
         public IEnumerable<Status> GetStatuses()
         {
             string statuscmd = @"SELECT * FROM [dbo].[STATUS]";
@@ -172,6 +200,13 @@ namespace Runbook.Services
             return statuses;
         }
 
+        /// <summary>
+        /// modify book details
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="envId"></param>
+        /// <param name="statusId"></param>
+        /// <returns>Success message</returns>
         public bool UpdateBookStatus(int bookId, int envId, int statusId)
         {
             string updatecmd = @"UPDATE [dbo].[BookEnvironment] SET StatusId = @StatusId 

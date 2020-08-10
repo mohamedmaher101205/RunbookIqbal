@@ -7,8 +7,17 @@ using System.Data.SqlClient;
 
 namespace Runbook.API
 {
+    /// <summary>
+    /// This class is to inject the object using IOC container
+    /// </summary>
     public static class IOCExtensions
     {
+        /// <summary>
+        /// This method is to do dependency injection 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDbConnection>((connection) =>

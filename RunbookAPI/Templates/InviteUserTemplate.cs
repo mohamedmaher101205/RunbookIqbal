@@ -1,7 +1,13 @@
 ﻿namespace Runbook.API.Templates
 {
+    /// <summary>
+    /// This class is to invite the user to register
+    /// </summary>
     public static class InviteUserTemplate
     {
+        /// <summary>
+        /// email template to invite to register the user
+        /// </summary>
         public static string emailTemplate = @"<section>
     <p>Hi,</p> 
     <p>You have been invited for the RunBook application.</p> 

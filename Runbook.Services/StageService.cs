@@ -7,15 +7,30 @@ using System.Data;
 
 namespace Runbook.Services
 {
+
+    /// <summary>
+    /// This StageService class have methods to performing create a stage
+    /// get all stage,modify stage
+    /// </summary>
     public class StageService : IStageService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        /// This constructor is to inject IDBConnection using constructor dependency injuction
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public StageService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        /// create a stage
+        /// </summary>
+        /// <param name="stage"></param>
+        /// <param name="bookId"></param>
+        /// <returns>true or false</returns>
         public bool CreateStage(Stage stage, int bookId)
         {
             try
@@ -74,6 +89,12 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Read all stages
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="envId"></param>
+        /// <returns>list of stages</returns>
         public IEnumerable<Stage> GetAllStages(int bookId, int envId)
         {
             try
@@ -95,6 +116,13 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// modify the stage status
+        /// </summary>
+        /// <param name="stageid"></param>
+        /// <param name="nextStageId"></param>
+        /// <param name="statusId"></param>
+        /// <returns>true or false</returns>
         public bool UpdateStageStatus(int stageid, int nextStageId, int statusId)
         {
             try

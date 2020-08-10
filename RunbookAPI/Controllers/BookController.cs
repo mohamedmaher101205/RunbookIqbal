@@ -9,6 +9,10 @@ using System.Linq;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This BookController class have methods to performing create a book,select particular book, 
+    /// get all books,get book Statuses,modify Book by environment
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -17,12 +21,22 @@ namespace Runbook.API.Controllers
         private readonly IBookService _book;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="book"></param>
         public BookController(ILogger<BookController> logger, IBookService book)
         {
             _logger = logger;
             _book = book;
         }
 
+        /// <summary>
+        /// create new book
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateBook")]
         public IActionResult CreateBook([FromBody] Book book)
@@ -47,6 +61,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// select particular book
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>book details</returns>
         [HttpGet]
         [Route("GetBookById/{id}")]
         public ActionResult<Book> GetBook(int id)
@@ -70,6 +89,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// select all books
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>List of books</returns>
         [HttpGet]
         [Route("GetBooks/{userid}/{tenantId}")]
         public ActionResult<IEnumerable<Book>> GetAllBooks(int userId, int tenantId)
@@ -93,6 +118,10 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// status of books
+        /// </summary>
+        /// <returns>book status</returns>
         [HttpGet]
         [Route("GetStatuses")]
         public ActionResult<IEnumerable<Status>> GetStatuses()
@@ -108,6 +137,13 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// modify book details
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="envId"></param>
+        /// <param name="statusId"></param>
+        /// <returns>Success message</returns>
         [HttpPut]
         [Route("UpdateBook/{bookId}/{envId}/{statusId}")]
         public IActionResult UpdateBookByEnvironment(int bookId, int envId, int statusId)

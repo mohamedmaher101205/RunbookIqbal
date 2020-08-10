@@ -10,15 +10,27 @@ using System.Text;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This JwtTokenGenerator class is to generate the token for user
+    /// </summary>
     public class JwtTokenGenerator : IJwtTokenGenerator
     {
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// This constructor is to inject IConfiguration using constructor dependency injuction
+        /// </summary>
+        /// <param name="config"></param>
         public JwtTokenGenerator(IConfiguration config)
         {
             _config = config;
         }
 
+        /// <summary>
+        /// generate the token for user 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public AuthRequest GenerateToken(User user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));

@@ -7,15 +7,29 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This ResourceService class have methods to performing create a resource, create a resource type
+    /// get all resource,get all resource type
+    /// </summary>
     public class ResourceService : IResourceService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        /// This constructor is to inject IDBConnection using constructor dependency injuction
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public ResourceService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        /// create a resource
+        /// </summary>
+        /// <param name="resourceType"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>integer value</returns>
         public int CreateResourceType(ResourceType resourceType, int tenantId)
         {
             try
@@ -44,6 +58,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Read all resource list
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of resource type</returns>
         public IEnumerable<ResourceType> GetResourceTypes(int tenantId)
         {
             try
@@ -68,6 +87,12 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// create a resource
+        /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>integer value</returns>
         public int CreateResource(Resource resource, int tenantId)
         {
             try
@@ -98,6 +123,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Read all resource list
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of resource</returns>
         public IEnumerable<Resource> GetAllResources(int tenantId)
         {
             try

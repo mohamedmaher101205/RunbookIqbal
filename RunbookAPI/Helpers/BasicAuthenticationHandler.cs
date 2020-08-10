@@ -15,9 +15,21 @@ using System.Threading.Tasks;
 
 namespace Runbook.API.Helpers
 {
+    /// <summary>
+    /// this class is to handle authenication for the user
+    /// </summary>
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         User _user = null;
+
+        /// <summary>
+        /// contructor is to get user details object
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
+        /// <param name="encoder"></param>
+        /// <param name="clock"></param>
+        /// <param name="userService"></param>
         public BasicAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
@@ -29,6 +41,10 @@ namespace Runbook.API.Helpers
             _user = new User();
         }
 
+        /// <summary>
+        /// This method is to validate token for authentication
+        /// </summary>
+        /// <returns>authentication result</returns>
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
 
@@ -59,6 +75,10 @@ namespace Runbook.API.Helpers
             return AuthenticateResult.Success(ticket);
         }
 
+        /// <summary>
+        /// This method is to validate token
+        /// </summary>
+        /// <returns>true or false</returns>
         private async Task<bool> ValidateJWTToken()
         {
             try
@@ -99,7 +119,7 @@ namespace Runbook.API.Helpers
                 }
             }
             catch { return false; }
-            return true;            
+            return true;
         }
     }
 }

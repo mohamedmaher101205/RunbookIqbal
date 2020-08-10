@@ -7,15 +7,29 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This GroupService class have methods to performing create a group and get users group,
+    /// select all group,select all permission, add user to the group, get tenant group
+    /// </summary>
     public class GroupService : IGroupService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        /// This constructor is to inject IDBConnection using constructor dependency injuction
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public GroupService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        ///  create a group
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
         public int CreateGroup(int tenantId, Group group)
         {
             try
@@ -56,6 +70,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        ///  Read group list based on tenant
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>Tenant Group list</returns>
         public IEnumerable<Group> GetTenantGroups(int tenantId)
         {
             try
@@ -78,6 +97,10 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Read list of permissions
+        /// </summary>
+        /// <returns>List of permission</returns>
         public IEnumerable<Permissions> GetPermissions()
         {
             try
@@ -99,6 +122,12 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// add users to the group
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="userIds"></param>
+        /// <returns>receive added users message</returns>
         public int AddUsersToGroup(int groupId, int[] userIds)
         {
             try
@@ -132,6 +161,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Reading list of users based on group id
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns>list of users</returns>
         public IEnumerable<User> GetGroupUsers(int groupId)
         {
             try

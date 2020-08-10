@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This GroupController class have methods to performing create a group and get users grop,
+    /// select all group,select all permission, add user to the group, get tenant group
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -16,12 +20,23 @@ namespace Runbook.API.Controllers
         private readonly ILogger _logger;
         private readonly IGroupService _group;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="group"></param>
         public GroupController(ILogger<GroupController> logger, IGroupService group)
         {
             _logger = logger;
             _group = group;
         }
 
+        /// <summary>
+        ///  create a group
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateGroup/{tenantId}")]
         public ActionResult CreateGroup([FromBody] Group group, int tenantId)
@@ -53,6 +68,10 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Read list of permissions
+        /// </summary>
+        /// <returns>List of permission</returns>
         [HttpGet]
         [Route("GetPermissions")]
         public ActionResult<IEnumerable<Permissions>> GetPermissions()
@@ -76,6 +95,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        ///  Read group list based on tenant
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>Tenant Group list</returns>
         [HttpGet]
         [Route("GetGroups/{tenantId}")]
         public ActionResult<IEnumerable<Group>> GetTenantGroups(int tenantId)
@@ -107,6 +131,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// add users to the group
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="userIds"></param>
+        /// <returns>receive added users message</returns>
         [HttpPost]
         [Route("AddGroupUsers/{groupId}/{userIds}")]
         public IActionResult AddUsersToGroup(int groupId, string userIds)
@@ -136,6 +166,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Reading list of users based on group id
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns>list of users</returns>
         [HttpGet]
         [Route("GetGroupUsers/{groupId}")]
         public ActionResult<IEnumerable<User>> GetGroupUsers(int groupId)

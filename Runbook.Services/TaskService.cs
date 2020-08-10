@@ -7,15 +7,30 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This TaskService class have methods to performing create a task,select particular book, 
+    /// get all task,modify task Statuses,modify task and remove the task
+    /// </summary>
     public class TaskService : ITaskService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public TaskService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        /// create a task
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="stageName"></param>
+        /// <param name="bookId"></param>
+        /// <returns>true or false</returns>
         public bool CreateTask(Task task, string stageName, int bookId)
         {
             string taskcmd = @"INSERT INTO [dbo].[Task](TaskName,StageId,Description,CompletedByDate,AssignedTo,StatusId) 
@@ -65,6 +80,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// read all tasks
+        /// </summary>
+        /// <param name="stageId"></param>
+        /// <returns>list of tasks</returns>
         public IEnumerable<Task> GetAllTasks(int stageId)
         {
             string taskscmd = @"SELECT * FROM [dbo].[Task] WHERE StageId=@StageId";
@@ -79,6 +99,12 @@ namespace Runbook.Services
             return tasks;
         }
 
+        /// <summary>
+        /// modify the task status
+        /// </summary>
+        /// <param name="taskids"></param>
+        /// <param name="statusId"></param>
+        /// <returns>true or false</returns>
         public bool UpdateTaskStatus(int[] taskids, int statusId)
         {
             string taskupdatecmd = @"UPDATE [dbo].[Task] SET StatusId = @StatusId WHERE TaskId IN @ids";
@@ -112,6 +138,12 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// remove the task
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="taskName"></param>
+        /// <returns>removeed tasks details</returns>
         public int DeleteTasks(int bookId, string taskName)
         {
             string gettaskids = @"SELECT t.TaskId FROM [dbo].[Task] t
@@ -143,6 +175,12 @@ namespace Runbook.Services
             return taskdeleted;
         }
 
+        /// <summary>
+        /// modify the task
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="taskId"></param>
+        /// <returns>integer value</returns>
         public int UpdateTask(int taskId, Task task)
         {
             try

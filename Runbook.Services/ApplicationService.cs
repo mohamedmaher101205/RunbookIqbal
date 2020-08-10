@@ -7,15 +7,29 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This ApplicationService class used to create Application and tenant, Read particular application or all, Read particular 
+    /// application type or all, add application to book, read application using book
+    /// </summary>
     public class ApplicationService : IApplicationService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        ///  This constructor is to inject IDBConnection object using constructor dependency injuction
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public ApplicationService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        /// create an application
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>true or false</returns>
         public bool CreateApplication(Application app, int tenantId)
         {
             try
@@ -72,6 +86,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Read all application details
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of applications</returns>
         public IEnumerable<Application> GetAllApplications(int tenantId)
         {
             string getappscmd = @"SELECT app.[AppId], app.[ApplicationName],app.[Description],
@@ -107,6 +126,11 @@ namespace Runbook.Services
             return apps;
         }
 
+        /// <summary>
+        /// Read all application type details
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of applications details</returns>
         public IEnumerable<ApplicationType> GetApplicationTypes(int tenantId)
         {
             string apptypecmd = @"SELECT * FROM [dbo].[UserDefinedapplicationType] 
@@ -123,6 +147,12 @@ namespace Runbook.Services
             return apptypes;
         }
 
+        /// <summary>
+        /// add new application
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="appIds"></param>
+        /// <returns>inserted row</returns>
         public int AddApplications(int bookId, int[] appIds)
         {
             string appinsertcmd = @"INSERT INTO [dbo].[BookApplication](BookId,AppId) VALUES(@BookId,@AppId)";
@@ -152,6 +182,13 @@ namespace Runbook.Services
             return insertedrows;
         }
 
+        /// <summary>
+        /// Read all application details using book id 
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns>List of applications</returns>
+
+        /// <returns></returns>
         public IEnumerable<Application> GetApplicationByBookId(int bookId)
         {
             string getapps = @"SELECT app.AppId,app.ApplicationName,app.Description,apptype.appTypeName,app.TenantId
@@ -171,6 +208,12 @@ namespace Runbook.Services
             return apps;
         }
 
+        /// <summary>
+        /// add new applicaion type
+        /// </summary>
+        /// <param name="appType"></param>
+        /// <param name="tenantId"></param>
+        /// <returns> integer value</returns>
         public int CreateCustomApplicationType(ApplicationType appType, int tenantId)
         {
             try

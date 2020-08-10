@@ -15,18 +15,32 @@ using System.IO;
 
 namespace Runbook.API
 {
+    /// <summary>
+    /// This class executes after program method executes
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// This constructor is to inject configuration object
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// local configuration object used to get injected configuration object
+        /// </summary>
+        /// <value></value>
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
-        {        
+        {
             services.AddControllers();
 
             services.ResolveDependencies(Configuration);
@@ -95,7 +109,11 @@ namespace Runbook.API
             services.AddAuthorization();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

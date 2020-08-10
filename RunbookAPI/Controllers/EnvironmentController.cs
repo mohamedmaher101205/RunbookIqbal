@@ -8,6 +8,11 @@ using System.Collections.Generic;
 
 namespace Runbook.API.Controllers
 {
+
+    /// <summary>
+    /// This EnvironmentController class have methods to performing create an environment and 
+    /// select all environments
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -16,12 +21,23 @@ namespace Runbook.API.Controllers
         private readonly ILogger _logger;
         private readonly IEnvironmentService _env;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="env"></param>
         public EnvironmentController(ILogger<EnvironmentController> logger, IEnvironmentService env)
         {
             _logger = logger;
             _env = env;
         }
 
+        /// <summary>
+        /// create an environment
+        /// </summary>
+        /// <param name="env"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateEnvironment/{tenantId}")]
         public IActionResult CreateCustomEnvironment([FromBody] Environments env, int tenantId)
@@ -50,6 +66,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// select all environment list
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of environment</returns>
         [HttpGet]
         [Route("GetEnvironments/{tenantId}")]
         public ActionResult<IEnumerable<Environments>> GetAllEnvironments(int tenantId)
