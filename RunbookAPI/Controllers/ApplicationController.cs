@@ -1,10 +1,11 @@
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
@@ -28,7 +29,7 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(app.ApplicationName))
+                if (!string.IsNullOrEmpty(app.ApplicationName) && tenantId > 0)
                 {                   
                     var res = _app.CreateApplication(app, tenantId);
                     if (res)
@@ -42,20 +43,20 @@ namespace Runbook.API.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Empty Application name : {app} in CreateApplication");
-                    return BadRequest($"Empty Application name : {app}");
+                    _logger.LogError($"Empty Application name : {app} or Invalid TenantId : {tenantId} in CreateApplication");
+                    return BadRequest($"Empty Application name : {app} or Invalid TenantId : {tenantId}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in CreateApplication : {ex} ");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
         [HttpGet]
         [Route("GetApplications/{tenantId}")]
-        public ActionResult<IEnumerable<Application>> GetAllApplications(int tenantId)
+        public IActionResult GetAllApplications(int tenantId)
         {
             try
             {
@@ -72,22 +73,30 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in GetAllApplications() : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
         [HttpGet]
         [Route("GetApplicationTypes/{tenantId}")]
-        public ActionResult<IEnumerable<ApplicationType>> GetApplicationTypes(int tenantId)
+        public IActionResult GetApplicationTypes(int tenantId)
         {
             try
             {
-                return Ok(_app.GetApplicationTypes(tenantId));
+                if(tenantId > 0)
+                {
+                    return Ok(_app.GetApplicationTypes(tenantId));
+                }
+                else
+                {
+                    _logger.LogInformation($"Invalid TenantId : ${tenantId} in GetAllApllications");
+                    return BadRequest($"Invalid TenantId : ${tenantId}");
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in GetApplicationTypes() : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -97,9 +106,8 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                if (bookId > 0)
+                if (bookId > 0 && !string.IsNullOrEmpty(appIds))
                 {
-
                     int[] ApplicationIds = Array.ConvertAll(appIds.Split(','), int.Parse);
                     var insertedRows = _app.AddApplications(bookId, ApplicationIds);
 
@@ -109,7 +117,7 @@ namespace Runbook.API.Controllers
                     }
                     else
                     {
-                        return Ok("Failed to insert");
+                        return NotFound("Failed to insert");
                     }
                 }
                 else
@@ -121,13 +129,13 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in AddApplication() : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
         [HttpGet]
         [Route("GetBookApplications/{bookId}")]
-        public ActionResult<IEnumerable<Application>> GetApplicationByBookId(int bookId)
+        public IActionResult GetApplicationByBookId(int bookId)
         {
             try
             {
@@ -144,7 +152,7 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in GetApplicationsByBookId() : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -176,7 +184,7 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in CreateApplicationType : {ex} ");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
     }
