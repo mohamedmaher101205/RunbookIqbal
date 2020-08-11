@@ -85,9 +85,9 @@ namespace Runbook.Test
             var controller = new BookController(logger.Object, bookServiceMoq.Object);
 
             var result = controller.GetBook(BookId);
-
+            //assert
+            Assert.IsType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
-            // assert
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             bookServiceMoq.Verify(c => c.GetBook(BookId), Times.Once());
@@ -123,10 +123,10 @@ namespace Runbook.Test
             var controller = new BookController(logger.Object, bookServiceMoq.Object);
 
             var result = controller.GetAllBooks(UserId, BookId);
-
-            var okResult = result.Result as OkObjectResult;
             // assert
-            Assert.NotNull(okResult);
+            Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
+             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             bookServiceMoq.Verify(c => c.GetAllBooks(UserId, BookId), Times.Once());
 
@@ -163,11 +163,11 @@ namespace Runbook.Test
 
             var result = controller.GetStatuses();
 
-            var okResult = result.Result as OkObjectResult;
             // assert
-            Assert.NotNull(okResult);
+            Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
+             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
-
             bookServiceMoq.Verify(c => c.GetStatuses(), Times.Once());
 
 
@@ -264,7 +264,7 @@ namespace Runbook.Test
         }
 
         [Fact]
-        public void UpdateBookByEnvironment_InvalidstatusIdenvId_Unsuccessfull()
+        public void UpdateBookByEnvironment_InvalidstatusId_InvalidenvId_Unsuccessfull()
         {
             int bookId = 1;
             int envId = 0;
@@ -286,7 +286,7 @@ namespace Runbook.Test
         }
 
         [Fact]
-        public void UpdateBookByEnvironment_InvalidstatusIdBookId_Unsuccessfull()
+        public void UpdateBookByEnvironment_InvalidstatusId_InvalidBookId_Unsuccessfull()
         {
             int bookId = 0;
             int envId = 1;
@@ -306,7 +306,7 @@ namespace Runbook.Test
         }
 
         [Fact]
-        public void UpdateBookByEnvironment_InvalidenvIdBookId_Unsuccessfull()
+        public void UpdateBookByEnvironment_InvalidenvId_InvalidBookId_Unsuccessfull()
         {
             int bookId = 0;
             int envId = 0;
