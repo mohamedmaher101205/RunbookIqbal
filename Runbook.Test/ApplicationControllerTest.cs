@@ -36,10 +36,11 @@ namespace Runbook.Test
 
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.CreateApplication(app,tenantId);
+            var response = controller.CreateApplication(app,tenantId) as OkObjectResult;
             
             // Assert
             Assert.IsType<OkObjectResult>(response);
+            Assert.Equal("Application created successfully",response.Value);
             applicationServiceMoq.Verify(c => c.CreateApplication(app,tenantId),Times.Once);
         }
 
@@ -58,10 +59,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.CreateApplication(app,tenantId);
+            var response = controller.CreateApplication(app,tenantId) as BadRequestObjectResult;
             
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal("Application Not created",response.Value);
             applicationServiceMoq.Verify(c => c.CreateApplication(app,tenantId),Times.Once);
         }
 
@@ -94,7 +96,7 @@ namespace Runbook.Test
 
             //Act
             var controller = new ApplicationController(logger.Object ,applicationServiceMoq.Object);
-            var result = controller.GetAllApplications(tenantId);
+            var result = controller.GetAllApplications(tenantId) as OkObjectResult;
 
             //Assert
             Assert.IsType<OkObjectResult>(result);
@@ -109,10 +111,11 @@ namespace Runbook.Test
 
             //Act
             var controller = new ApplicationController(logger.Object ,applicationServiceMoq.Object);
-            var result = controller.GetAllApplications(tenantId);
+            var response = controller.GetAllApplications(tenantId) as BadRequestObjectResult;
 
             //Assert
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal($"Invalid TenantId : {tenantId}",response.Value);
         }
 
         [Fact]
@@ -124,7 +127,7 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.GetApplicationTypes(tenantId);
+            var response = controller.GetApplicationTypes(tenantId) as OkObjectResult;
             
             // Assert
             Assert.IsType<OkObjectResult>(response);
@@ -139,10 +142,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.GetApplicationTypes(tenantId);
+            var response = controller.GetApplicationTypes(tenantId) as BadRequestObjectResult;
             
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal($"Invalid TenantId : ${tenantId}",response.Value);
         }
 
         [Fact]
@@ -157,11 +161,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.AddApplicationToBook(bookId,applicationIds);
+            var response = controller.AddApplicationToBook(bookId,applicationIds) as OkObjectResult;
             
             // Assert
             Assert.IsType<OkObjectResult>(response);
-            //Assert.Equal($"Inserted ${rowsInserted} rows",response.Value);
+            Assert.Equal($"Inserted ${rowsInserted} rows",response.Value);
             applicationServiceMoq.Verify(c => c.AddApplications(bookId,appIds),Times.Once);
         }
 
@@ -177,11 +181,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.AddApplicationToBook(bookId,applicationIds);
+            var response = controller.AddApplicationToBook(bookId,applicationIds) as NotFoundObjectResult;
             
             // Assert
             Assert.IsType<NotFoundObjectResult>(response);
-           // Assert.Equal("Failed to insert",response.Value);
+            Assert.Equal("Failed to insert",response.Value);
            applicationServiceMoq.Verify(c => c.AddApplications(bookId,appIds),Times.Once);
         }
 
@@ -194,10 +198,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.AddApplicationToBook(bookId,applicationIds);
+            var response = controller.AddApplicationToBook(bookId,applicationIds) as BadRequestObjectResult;
             
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal($"Invalid BookId : {bookId} or ApplicationIds : {applicationIds}",response.Value);
         }
 
         [Fact]
@@ -209,7 +214,7 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.GetApplicationByBookId(bookId);
+            var response = controller.GetApplicationByBookId(bookId) as OkObjectResult;
             
             // Assert
             Assert.IsType<OkObjectResult>(response);
@@ -224,10 +229,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.GetApplicationByBookId(bookId);
+            var response = controller.GetApplicationByBookId(bookId) as BadRequestObjectResult;
             
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal($"Invalid BookId in : {bookId}",response.Value);
         }
 
         [Fact]
@@ -243,10 +249,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.CreateApplicationType(applicationType,tenantId);
+            var response = controller.CreateApplicationType(applicationType,tenantId) as OkObjectResult;
             
             // Assert
             Assert.IsType<OkObjectResult>(response);
+            Assert.Equal("Application Type created successfully",response.Value);
             applicationServiceMoq.Verify(c => c.CreateCustomApplicationType(applicationType,tenantId),Times.Once);
         }
 
@@ -263,10 +270,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.CreateApplicationType(applicationType,tenantId);
+            var response = controller.CreateApplicationType(applicationType,tenantId) as BadRequestObjectResult;
             
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal("Application Type Not created",response.Value);
             applicationServiceMoq.Verify(c => c.CreateCustomApplicationType(applicationType,tenantId),Times.Once);
         }
 
@@ -281,10 +289,11 @@ namespace Runbook.Test
             
             // Act
             var controller = new ApplicationController(logger.Object,applicationServiceMoq.Object);
-            var response = controller.CreateApplicationType(applicationType,tenantId);
+            var response = controller.CreateApplicationType(applicationType,tenantId) as BadRequestObjectResult;
             
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
+            Assert.Equal($"Empty Application name : {applicationType} Or invalid tenantId : {tenantId}",response.Value);
         }
     }
 }
