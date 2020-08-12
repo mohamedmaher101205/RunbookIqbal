@@ -62,7 +62,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// select particular book
+        /// Get particular book
         /// </summary>
         /// <param name="id"></param>
         /// <returns>book details</returns>
@@ -90,7 +90,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// select all books
+        /// Get all books
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="tenantId"></param>
@@ -121,7 +121,7 @@ namespace Runbook.API.Controllers
         /// <summary>
         /// status of books
         /// </summary>
-        /// <returns>book status</returns>
+        /// <returns>Book status</returns>
         [HttpGet]
         [Route("GetStatuses")]
         public ActionResult<IEnumerable<Status>> GetStatuses()
@@ -138,7 +138,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// modify book details
+        /// Modify book details
         /// </summary>
         /// <param name="bookId"></param>
         /// <param name="envId"></param>

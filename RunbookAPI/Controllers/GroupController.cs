@@ -32,7 +32,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        ///  create a group
+        ///  Create a group
         /// </summary>
         /// <param name="group"></param>
         /// <param name="tenantId"></param>
@@ -45,6 +45,7 @@ namespace Runbook.API.Controllers
             {
                 if (tenantId > 0 && !string.IsNullOrEmpty(group.GroupName))
                 {
+
                     var res = _group.CreateGroup(tenantId, group);
                     if (res > 0)
                     {
@@ -132,11 +133,11 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// add users to the group
+        /// Add users to the group
         /// </summary>
         /// <param name="groupId"></param>
         /// <param name="userIds"></param>
-        /// <returns>receive added users message</returns>
+        /// <returns>Receive added users message</returns>
         [HttpPost]
         [Route("AddGroupUsers/{groupId}/{userIds}")]
         public IActionResult AddUsersToGroup(int groupId, string userIds)
@@ -167,7 +168,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// Reading list of users based on group id
+        /// Get list of users based on group
         /// </summary>
         /// <param name="groupId"></param>
         /// <returns>list of users</returns>

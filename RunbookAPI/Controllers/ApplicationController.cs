@@ -124,7 +124,7 @@ namespace Runbook.API.Controllers
         /// <summary>
         /// Adds the application to the book using ApplicationId and BookId
         /// </summary>
-        /// <param name="bookId"></param>
+        /// <param name="bookId"></param>   
         /// <param name="appIds"></param>
         /// <returns>Numbers of rows inserted</returns>
         [HttpPost]

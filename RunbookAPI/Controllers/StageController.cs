@@ -33,7 +33,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// create a stage
+        /// Create a stage
         /// </summary>
         /// <param name="stage"></param>
         /// <param name="bookId"></param>
@@ -72,11 +72,11 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// Read all stages
+        /// Get all stages
         /// </summary>
         /// <param name="bookId"></param>
         /// <param name="envId"></param>
-        /// <returns>list of stages</returns>
+        /// <returns>List of stages</returns>
         [HttpGet]
         [Route("GetStages/{BookId}/{EnvId}")]
         public ActionResult<IEnumerable<Stage>> GetAllStages(int bookId, int envId)
@@ -101,12 +101,12 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// modify the stage status
+        /// Modify the stage status
         /// </summary>
         /// <param name="stageId"></param>
         /// <param name="nextStageId"></param>
         /// <param name="statusId"></param>
-        /// <returns>true or false</returns>
+        /// <returns>True or False</returns>
         [HttpPut]
         [Route("UpdateStage/{stageId}/{nextStageId}/{statusId}")]
         public ActionResult<bool> UpdateStageStatus(int stageId, int nextStageId, int statusId)

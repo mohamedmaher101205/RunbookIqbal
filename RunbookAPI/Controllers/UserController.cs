@@ -73,7 +73,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// send email to invite the user
+        /// Send email to invite the user
         /// </summary>
         /// <param name="email"></param>
         /// <returns>sucess message</returns>

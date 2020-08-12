@@ -32,7 +32,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// create a task
+        /// Create a task
         /// </summary>
         /// <param name="task"></param>
         /// <param name="bookId"></param>
@@ -72,10 +72,10 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// read all tasks
+        /// Get all the tasks
         /// </summary>
         /// <param name="stageId"></param>
-        /// <returns>list of tasks</returns>
+        /// <returns>List of tasks</returns>
         [HttpGet]
         [Route("GetTasks/{StageId}")]
         public ActionResult<IEnumerable<Task>> GetAllTasks(int stageId)
@@ -100,11 +100,11 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// modify task status
+        /// Modify task status
         /// </summary>
         /// <param name="ids"></param>
         /// <param name="statusId"></param>
-        /// <returns>true or false</returns>
+        /// <returns>True or false</returns>
         [HttpPut]
         [Route("UpdateTasks/{ids}/{statusId}")]
         public ActionResult<bool> UpdateTaskStatus(string ids, int statusId)
@@ -130,7 +130,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// remove the task
+        /// Remove the task
         /// </summary>
         /// <param name="bookId"></param>
         /// <param name="taskName"></param>
@@ -160,11 +160,11 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// modify the task
+        /// Modify the task using task id
         /// </summary>
         /// <param name="task"></param>
         /// <param name="taskId"></param>
-        /// <returns>success or fail message</returns>
+        /// <returns>Success or fail message</returns>
         [HttpPost]
         [Route("UpdateTask/{taskId}")]
         public IActionResult UpdateTask([FromBody] Task task, int taskId)

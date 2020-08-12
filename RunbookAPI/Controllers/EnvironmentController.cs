@@ -33,7 +33,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// create an environment
+        /// Create an environment
         /// </summary>
         /// <param name="env"></param>
         /// <param name="tenantId"></param>
@@ -67,7 +67,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// select all environment list
+        /// Get all environment list
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns>List of environment</returns>

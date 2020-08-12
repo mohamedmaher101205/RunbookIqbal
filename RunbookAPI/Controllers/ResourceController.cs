@@ -32,7 +32,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// create a resource
+        /// Create a resource
         /// </summary>
         /// <param name="resourceType"></param>
         /// <param name="tenantId"></param>
@@ -70,7 +70,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// Read all resource list
+        /// Get all resource list
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns>List of resource type</returns>
@@ -98,7 +98,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// create a resource
+        /// Create a resource
         /// </summary>
         /// <param name="resource"></param>
         /// <param name="tenantId"></param>
@@ -136,7 +136,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// Read all resource list
+        /// Get all resource list
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns>List of resource</returns>

@@ -32,7 +32,8 @@ namespace Runbook.API.Controllers
         /// Authenticate the user and returns the token
         /// </summary>
         /// <param name="user"></param>
-        /// <returns>Token</returns>
+        /// <returns>Token</returns>       
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody] User user)
@@ -67,8 +68,7 @@ namespace Runbook.API.Controllers
         }
 
         /// <summary>
-        /// Register the sign up user and returns success message and if the user is exist already then
-        /// returns that user is existing user and if email or password is empty then returns alert message
+        /// Register the sign up user and returns success message
         /// </summary>
         /// <param name="user"></param>
         /// <returns>Success message</returns>
