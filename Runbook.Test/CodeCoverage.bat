@@ -1,0 +1,2 @@
+dotnet test --configuration release /p:CollectCoverage=true /p:CoverletOutputFOrmat=cobertura /p:Exclude="[xunit]*"
+tools\reportgenerator.exe ^ "-reports:BuildReports\Coverage\coverage.cobertura.xml" ^ "-targetdir:BuildReports\Coverage" ^ -reporttypes:HTML;HTMLSummary
