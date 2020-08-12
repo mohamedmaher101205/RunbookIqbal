@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
@@ -40,30 +41,37 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                IActionResult response = Unauthorized();
-                object token = null;
-
-                if (string.IsNullOrEmpty(user.Password))
+                if(!string.IsNullOrEmpty(user.UserEmail))
                 {
-                    token = _auth.OpenIdAuthenticateUser(user);
+                    IActionResult response = Unauthorized();
+                    AuthRequest token = null;
+
+                    if (string.IsNullOrEmpty(user.Password))
+                    {
+                        token = _auth.OpenIdAuthenticateUser(user);
+                    }
+                    else
+                    {
+                        token = _auth.AuthenticateUser(user);
+                    }
+
+                    if (token.Token != null)
+                    {
+                        response = Ok(token);
+                    }
+
+                    return response;
                 }
                 else
                 {
-                    token = _auth.AuthenticateUser(user);
+                    _logger.LogError($"User email is empty : {user}");
+                    return BadRequest("Email should not be empty");
                 }
-
-                if (token != null)
-                {
-                    response = Ok(token);
-                }
-
-                return response;
-
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in Login : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -78,20 +86,21 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                if (!string.IsNullOrEmpty(user.UserEmail))
+                if (!string.IsNullOrEmpty(user.UserEmail) && !string.IsNullOrEmpty(user.Password))
                 {
                     var UserRegistration = _auth.RegisterUser(user);
 
                     if (UserRegistration == "User exist")
                     {
-                        return StatusCode(206, "User with same email already exist");
+                        return Conflict("User with same email already exist"); 
+                        //return StatusCode(StatusCodes.Status206PartialContent,"User with same email already exist");
                     }
                     else if (UserRegistration == "successfull")
                     {
                         return Ok("User registered successfully");
                     }
                     else
-                        return StatusCode(206, UserRegistration);
+                    return StatusCode(StatusCodes.Status500InternalServerError, UserRegistration);
                 }
                 else
                 {
@@ -102,7 +111,7 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server error in Register user : {ex}");
-                return StatusCode(500, "Internal server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server Error");
             }
         }
     }
