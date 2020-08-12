@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This AuthController class have methods to performing singup registration and 
+    /// login the user
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class AuthController : ControllerBase
@@ -14,12 +18,23 @@ namespace Runbook.API.Controllers
         private readonly IAuthService _auth;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="auth"></param>
+        /// <param name="logger"></param>
         public AuthController(IAuthService auth, ILogger<AuthController> logger)
         {
             _auth = auth;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Authenticate the user and returns the token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>Token</returns>       
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody] User user)
@@ -60,6 +75,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Register the sign up user and returns success message
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("Register")]
         public IActionResult RegisterUser([FromBody] User user)
@@ -70,12 +90,12 @@ namespace Runbook.API.Controllers
                 {
                     var UserRegistration = _auth.RegisterUser(user);
 
-                    if(UserRegistration == "User exist")
+                    if (UserRegistration == "User exist")
                     {
                         return Conflict("User with same email already exist"); 
                         //return StatusCode(StatusCodes.Status206PartialContent,"User with same email already exist");
                     }
-                    else if(UserRegistration == "successfull")
+                    else if (UserRegistration == "successfull")
                     {
                         return Ok("User registered successfully");
                     }

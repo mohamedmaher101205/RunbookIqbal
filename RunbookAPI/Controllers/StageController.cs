@@ -8,6 +8,11 @@ using System.Collections.Generic;
 
 namespace Runbook.API.Controllers
 {
+
+    /// <summary>
+    /// This StageController class have methods to performing create a stage
+    /// get all stage,modify stage
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -16,12 +21,23 @@ namespace Runbook.API.Controllers
         private readonly IStageService _stage;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="stage"></param>
         public StageController(ILogger<StageController> logger, IStageService stage)
         {
             _logger = logger;
             _stage = stage;
         }
 
+        /// <summary>
+        /// Create a stage
+        /// </summary>
+        /// <param name="stage"></param>
+        /// <param name="bookId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateStage/{bookId}")]
         public IActionResult CreateStage(Stage stage, int bookId)
@@ -55,6 +71,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all stages
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="envId"></param>
+        /// <returns>List of stages</returns>
         [HttpGet]
         [Route("GetStages/{BookId}/{EnvId}")]
         public ActionResult<IEnumerable<Stage>> GetAllStages(int bookId, int envId)
@@ -78,6 +100,13 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Modify the stage status
+        /// </summary>
+        /// <param name="stageId"></param>
+        /// <param name="nextStageId"></param>
+        /// <param name="statusId"></param>
+        /// <returns>True or False</returns>
         [HttpPut]
         [Route("UpdateStage/{stageId}/{nextStageId}/{statusId}")]
         public ActionResult<bool> UpdateStageStatus(int stageId, int nextStageId, int statusId)

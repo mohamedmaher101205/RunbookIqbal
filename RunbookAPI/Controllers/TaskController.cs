@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This TaskController class have methods to performing create a task,select particular book, 
+    /// get all task,modify task Statuses,modify task and remove the task
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -16,12 +20,23 @@ namespace Runbook.API.Controllers
         private readonly ITaskService _task;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="task"></param>
         public TaskController(ILogger<TaskController> logger, ITaskService task)
         {
             _logger = logger;
             _task = task;
         }
 
+        /// <summary>
+        /// Create a task
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="bookId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateTask/{bookId}")]
         public IActionResult CreateTask([FromBody] Task task, int bookId)
@@ -56,6 +71,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all the tasks
+        /// </summary>
+        /// <param name="stageId"></param>
+        /// <returns>List of tasks</returns>
         [HttpGet]
         [Route("GetTasks/{StageId}")]
         public ActionResult<IEnumerable<Task>> GetAllTasks(int stageId)
@@ -79,6 +99,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Modify task status
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="statusId"></param>
+        /// <returns>True or false</returns>
         [HttpPut]
         [Route("UpdateTasks/{ids}/{statusId}")]
         public ActionResult<bool> UpdateTaskStatus(string ids, int statusId)
@@ -103,6 +129,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Remove the task
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <param name="taskName"></param>
+        /// <returns>removeed tasks details</returns>
         [HttpDelete]
         [Route("DeleteTask/{bookId}/{taskName}")]
         public IActionResult DeleteTask(int bookId, string taskName)
@@ -127,6 +159,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Modify the task using task id
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="taskId"></param>
+        /// <returns>Success or fail message</returns>
         [HttpPost]
         [Route("UpdateTask/{taskId}")]
         public IActionResult UpdateTask([FromBody] Task task, int taskId)

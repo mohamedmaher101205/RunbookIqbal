@@ -7,15 +7,28 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This UserService class have methods to performing to select particular tenant, 
+    /// get all users,send email to the user
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly IDbConnection _Idbconnection;
 
+        /// <summary>
+        /// This constructor is to inject IDBConnection using constructor dependency injuction
+        /// </summary>
+        /// <param name="dbConnection"></param>
         public UserService(IDbConnection dbConnection)
         {
             _Idbconnection = dbConnection;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public User GetUser(User user)
         {
             try
@@ -45,6 +58,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
         public Tenant GetTenant(int tenantId)
         {
             try
@@ -68,6 +86,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
         public IEnumerable<User> GetAllUsers(int tenantId)
         {
             try

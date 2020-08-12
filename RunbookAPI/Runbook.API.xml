@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Runbook.API</name>
+    </assembly>
+    <members>
+        <member name="M:Runbook.API.Controllers.ApplicationController.CreateApplication(Runbook.Models.Application,System.Int32)">
+            <summary>
+            Creates the application for a tenant
+            </summary>
+            <param name="app"></param>
+            <param name="tenantId"></param>
+            <returns></returns>
+            <respone code="200">Returns successfull message if application created successfully</respone>
+            <response code="400">Returns Bad request if error occurs while creating application</response>
+            <response code="500">Returns Internal server error, if any error occurs</response>
+        </member>
+        <member name="M:Runbook.API.Controllers.ApplicationController.GetAllApplications(System.Int32)">
+            <summary>
+            Get all the applications for a tenant by tenantId
+            </summary>
+            <param name="tenantId"></param>
+            <returns></returns>
+            <response code="200">Return list of applications</response>
+            <response code="400">If tenantId is invalid</response>
+        </member>
+        <member name="M:Runbook.API.Controllers.ApplicationController.GetApplicationTypes(System.Int32)">
+            <summary>
+            Get the application types available for a tenant by tenantId
+            </summary>
+            <param name="tenantId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Runbook.API.Controllers.ApplicationController.AddApplicationToBook(System.Int32,System.String)">
+            <summary>
+            Adds the application to the book using ApplicationId and BookId
+            </summary>
+            <param name="bookId"></param>
+            <param name="appIds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Runbook.API.Controllers.ApplicationController.GetApplicationByBookId(System.Int32)">
+            <summary>
+            Get applications that are added to book by passing parameter bookId
+            </summary>
+            <param name="bookId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Runbook.API.Controllers.ApplicationController.CreateApplicationType(Runbook.Models.ApplicationType,System.Int32)">
+            <summary>
+            Create the application type for a tenant
+            </summary>
+            <param name="appType"></param>
+            <param name="tenantId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Runbook.API.Controllers.UserController.GetTenant(System.Int32)">
+            <summary>
+            Get Tenant information by TenantId
+            </summary>
+            <param name="tenantId"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

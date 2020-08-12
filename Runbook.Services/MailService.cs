@@ -7,17 +7,32 @@ using System;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This MailService class is to send email for user
+    /// </summary>
     public class MailService : IMailService
     {
         private readonly IConfiguration _config;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This constructor is to inject IConfiguration using constructor dependency injuction
+        /// </summary>
+        /// <param name="config"></param>
+        /// <param name="logger"></param>
         public MailService(IConfiguration config, ILogger<MailService> logger)
         {
             _config = config;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Send email to the user
+        /// </summary>
+        /// <param name="toEmail"></param>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
         public async System.Threading.Tasks.Task SendEmail(string toEmail, string subject, string body)
         {
             try

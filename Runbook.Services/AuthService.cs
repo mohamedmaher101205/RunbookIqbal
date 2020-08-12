@@ -8,6 +8,10 @@ using System.Data;
 
 namespace Runbook.Services
 {
+    /// <summary>
+    /// This ApplicationService class used to register the user and authenticate and authorize 
+    /// the user and generate the token
+    /// </summary>
     public class AuthService : IAuthService
     {
         private readonly IUserService _user;
@@ -15,6 +19,14 @@ namespace Runbook.Services
         private readonly IDbConnection _Idbconnection;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
+        /// <summary>
+        /// This constructor is to inject IDBConnection,user service,configuration,jwt token generator
+        /// object using constructor dependency injuction
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="config"></param>
+        /// <param name="dbConnection"></param>
+        /// <param name="jwtTokenGenerator"></param>
         public AuthService(IUserService user, IConfiguration config, IDbConnection dbConnection, IJwtTokenGenerator jwtTokenGenerator)
         {
             _user = user;
@@ -23,6 +35,11 @@ namespace Runbook.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
+        /// <summary>
+        /// register the user using sign up
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>success or failed or user exist message</returns>
         public string RegisterUser(User user)
         {
             try
@@ -95,6 +112,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Authenticate user using username and password and create the token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>generated token</returns>
         public AuthRequest AuthenticateUser(User user)
         {
             try
@@ -116,6 +138,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// check user's email exist and generate token
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>token</returns>
         public AuthRequest OpenIdAuthenticateUser(User user)
         {
             try
@@ -140,6 +167,12 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        ///  copy default for application type, environments, resource types
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <param name="con"></param>
+        /// <returns></returns>
         private void CopyDefaluts(int tenantId, IDbConnection con)
         {
             try

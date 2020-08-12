@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
+    /// <summary>
+    /// This ApplicationController class used to create Application and tenant, Read particular application or all, Read particular 
+    /// application type or all, add application to book, read application using book
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -17,12 +21,26 @@ namespace Runbook.API.Controllers
         private readonly IApplicationService _app;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// This contructor is to inject object using dependency injection
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="app"></param>
         public ApplicationController(ILogger<ApplicationController> logger, IApplicationService app)
         {
             _logger = logger;
             _app = app;
         }
 
+        /// <summary>
+        /// Creates the application for a tenant
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
+        /// <respone code="200">Returns successfull message if application created successfully</respone>
+        /// <response code="400">Returns Bad request if error occurs while creating application</response>
+        /// <response code="500">Returns Internal server error, if any error occurs</response>
         [HttpPost]
         [Route("CreateApplication/{tenantId}")]
         public IActionResult CreateApplication([FromBody] Application app, int tenantId)
@@ -54,6 +72,13 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all the applications for a tenant by tenantId
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of all application</returns>
+        /// <response code="200">Return list of applications</response>
+        /// <response code="400">If tenantId is invalid</response>
         [HttpGet]
         [Route("GetApplications/{tenantId}")]
         public IActionResult GetAllApplications(int tenantId)
@@ -77,6 +102,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Get the application types available for a tenant by tenantId
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns>List of all application types</returns>
         [HttpGet]
         [Route("GetApplicationTypes/{tenantId}")]
         public IActionResult GetApplicationTypes(int tenantId)
@@ -100,6 +130,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Adds the application to the book using ApplicationId and BookId
+        /// </summary>
+        /// <param name="bookId"></param>   
+        /// <param name="appIds"></param>
+        /// <returns>Numbers of rows inserted</returns>
         [HttpPost]
         [Route("AddApplicationToBook/{bookId}/{appIds}")]
         public IActionResult AddApplicationToBook(int bookId, string appIds)
@@ -133,6 +169,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Get applications that are added to book by passing parameter bookId
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns>List of all application</returns>
         [HttpGet]
         [Route("GetBookApplications/{bookId}")]
         public IActionResult GetApplicationByBookId(int bookId)
@@ -156,6 +197,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Create the application type for a tenant
+        /// </summary>
+        /// <param name="appType"></param>
+        /// <param name="tenantId"></param>
+        /// <returns>Success message</returns>
         [HttpPost]
         [Route("CreateApplicationType/{tenantId}")]
         public IActionResult CreateApplicationType([FromBody] ApplicationType appType, int tenantId)
