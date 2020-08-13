@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Net;
@@ -99,10 +100,12 @@ namespace Runbook.Test
             //When
             var controller = new GroupController(logger.Object,groupServiceMoq.Object);
             var response = controller.GetPermissions() as OkObjectResult;
+            var responseObj = response.Value as List<Permissions>;
             
             //Then
             Assert.IsType<OkObjectResult>(response);
             Assert.NotNull(response.Value);
+            Assert.True(responseObj.Count > 0);
             groupServiceMoq.Verify(g => g.GetPermissions(),Times.Once);
         }
 
@@ -135,10 +138,12 @@ namespace Runbook.Test
             //When
             var controller = new GroupController(logger.Object,groupServiceMoq.Object);
             var response = controller.GetTenantGroups(tenantId) as OkObjectResult;
+            var responseObj = response.Value as List<Group>;
             
             //Then
             Assert.IsType<OkObjectResult>(response);
             Assert.NotNull(response.Value);
+            Assert.True(responseObj.Count > 0);
             groupServiceMoq.Verify(g => g.GetTenantGroups(tenantId),Times.Once);
         }
 
@@ -242,10 +247,12 @@ namespace Runbook.Test
             //When
             var controller = new GroupController(logger.Object,groupServiceMoq.Object);
             var response = controller.GetGroupUsers(groupId) as OkObjectResult;
+            var responseObj = response.Value as List<User>;
             
             //Then
             Assert.IsType<OkObjectResult>(response);
             Assert.NotNull(response.Value);
+            Assert.True(responseObj.Count > 0);
             groupServiceMoq.Verify(g => g.GetGroupUsers(groupId),Times.Once);
         }
 
