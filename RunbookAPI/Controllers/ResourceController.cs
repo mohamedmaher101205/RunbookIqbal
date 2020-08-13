@@ -5,6 +5,7 @@ using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
@@ -59,13 +60,13 @@ namespace Runbook.API.Controllers
                 else
                 {
                     _logger.LogError($"Empty ResourceType name : {resourceType} Or invalid tenantId : {tenantId} in CreateResourceType");
-                    return BadRequest($"Empty ResourceType name : {resourceType} Or invalid tenantId : {tenantId}");
+                    return BadRequest($"Empty ResourceType name : {resourceType.ResourceTypeName} Or invalid tenantId : {tenantId}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in CreateResourceType : {ex} ");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -76,13 +77,22 @@ namespace Runbook.API.Controllers
         /// <returns>List of resource type</returns>
         [HttpGet]
         [Route("GetResourceTypes/{tenantId}")]
-        public ActionResult<IEnumerable<ResourceType>> GetAllResourceTypes(int tenantId)
+        public IActionResult GetAllResourceTypes(int tenantId)
         {
             try
             {
                 if (tenantId > 0)
                 {
-                    return Ok(_resource.GetResourceTypes(tenantId));
+                    var resourceTypes = _resource.GetResourceTypes(tenantId);
+                    if(resourceTypes != null)
+                    {
+                        return Ok(resourceTypes);
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"There are no resource types found for tenantId : {tenantId} in GetAllResourceTYpes");
+                        return NotFound($"There are no resource types found for tenantId : {tenantId}");
+                    }
                 }
                 else
                 {
@@ -93,7 +103,7 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in GetAllResourceTypes() : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -124,14 +134,14 @@ namespace Runbook.API.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Empty Application name : {resource} in CreateResource");
-                    return BadRequest($"Empty Application name : {resource}");
+                    _logger.LogError($"Empty Resource name : {resource.ResourceName} or Invalid TenantId : {tenantId} in CreateResource");
+                    return BadRequest($"Empty Resource name : {resource.ResourceName} or Invalid TenantId : {tenantId}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in CreateResource : {ex} ");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -142,13 +152,21 @@ namespace Runbook.API.Controllers
         /// <returns>List of resource</returns>
         [HttpGet]
         [Route("GetResources/{tenantId}")]
-        public ActionResult<IEnumerable<Resource>> GetAllResources(int tenantId)
+        public IActionResult GetAllResources(int tenantId)
         {
             try
             {
                 if (tenantId > 0)
                 {
-                    return Ok(_resource.GetAllResources(tenantId));
+                    var resources = _resource.GetAllResources(tenantId);
+                    if(resources != null)
+                    {
+                        return Ok(resources);
+                    }
+                    else
+                    {
+                        return NotFound($"No Resources found for the TenantId : {tenantId}");
+                    }
                 }
                 else
                 {
@@ -159,7 +177,7 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in GetAllResources() : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
     }
