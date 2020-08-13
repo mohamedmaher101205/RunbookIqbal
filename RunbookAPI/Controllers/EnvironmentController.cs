@@ -5,6 +5,7 @@ using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
@@ -44,25 +45,25 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                if (tenantId > 0)
+                if (tenantId > 0 && !string.IsNullOrEmpty(env.Environment))
                 {
                     int res = _env.CreateEnvironment(env, tenantId);
                     if (res > 0)
                     {
                         return Ok($"{res} Environments inserted");
                     }
-                    return Ok($"Environments failed to insert");
+                    return NotFound($"Environments failed to insert");
                 }
                 else
                 {
-                    _logger.LogError($"Invalid TenantId in CreateCustomEnvironment : {tenantId}");
-                    return BadRequest($"Invalid TenantId : {tenantId}");
+                    _logger.LogError($"Invalid TenantId : {tenantId} or environment name : {env.Environment} in CreateCustomEnvironment");
+                    return BadRequest($"Invalid TenantId : {tenantId} or environment name : {env.Environment}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server Error in CreateCustomEnvironment : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -73,16 +74,24 @@ namespace Runbook.API.Controllers
         /// <returns>List of environment</returns>
         [HttpGet]
         [Route("GetEnvironments/{tenantId}")]
-        public ActionResult<IEnumerable<Environments>> GetAllEnvironments(int tenantId)
+        public IActionResult GetAllEnvironments(int tenantId)
         {
             try
             {
-                return Ok(_env.GetAllEnvironments(tenantId));
+                if(tenantId > 0)
+                {   
+                    return Ok(_env.GetAllEnvironments(tenantId));
+                }
+                else
+                {
+                    _logger.LogError($"Invalid tenantId : {tenantId} in GetAllEnvironments");
+                    return NotFound($"Invalid tenantId : {tenantId}");
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in GetAllEnvironments : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
