@@ -5,6 +5,7 @@ using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace Runbook.API.Controllers
 {
@@ -53,7 +54,7 @@ namespace Runbook.API.Controllers
                     }
                     else
                     {
-                        return Ok("Group Creation unsuccessfull");
+                        return NotFound("Group Creation unsuccessfull");
                     }
                 }
                 else
@@ -65,7 +66,7 @@ namespace Runbook.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in CreateGroup : {ex}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
             }
         }
 
@@ -75,7 +76,7 @@ namespace Runbook.API.Controllers
         /// <returns>List of permission</returns>
         [HttpGet]
         [Route("GetPermissions")]
-        public ActionResult<IEnumerable<Permissions>> GetPermissions()
+        public IActionResult GetPermissions()
         {
             try
             {
@@ -86,13 +87,13 @@ namespace Runbook.API.Controllers
                 }
                 else
                 {
-                    return Ok($"No Permissions found");
+                    return NotFound($"No Permissions found");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server error in GetPermissions : {ex}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
             }
         }
 
@@ -103,7 +104,7 @@ namespace Runbook.API.Controllers
         /// <returns>Tenant Group list</returns>
         [HttpGet]
         [Route("GetGroups/{tenantId}")]
-        public ActionResult<IEnumerable<Group>> GetTenantGroups(int tenantId)
+        public IActionResult GetTenantGroups(int tenantId)
         {
             try
             {
@@ -116,7 +117,7 @@ namespace Runbook.API.Controllers
                     }
                     else
                     {
-                        return Ok($"No Groups for TenantId : {tenantId}");
+                        return NotFound($"No Groups found for TenantId : {tenantId}");
                     }
                 }
                 else
@@ -144,7 +145,7 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                if (groupId > 0)
+                if (groupId > 0 && !string.IsNullOrEmpty(userIds))
                 {
                     int[] UserIds = Array.ConvertAll(userIds.Split(','), int.Parse);
                     int res = _group.AddUsersToGroup(groupId, UserIds);
@@ -152,18 +153,18 @@ namespace Runbook.API.Controllers
                     {
                         return Ok($"{res} rows inserted");
                     }
-                    return Ok($"rows failed to insert");
+                    return NotFound($"rows failed to insert");
                 }
                 else
                 {
-                    _logger.LogError($"Invalid GroupId in AddUsersToGroup : {groupId}");
-                    return BadRequest($"Invalid GroupId : {groupId}");
+                    _logger.LogError($"Invalid GroupId : {groupId} or Users ids : {userIds}  in AddUsersToGroup");
+                    return BadRequest($"Invalid GroupId : {groupId} or Users ids : {userIds}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal server Error in AddUsersToGroup : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
 
@@ -174,7 +175,7 @@ namespace Runbook.API.Controllers
         /// <returns>list of users</returns>
         [HttpGet]
         [Route("GetGroupUsers/{groupId}")]
-        public ActionResult<IEnumerable<User>> GetGroupUsers(int groupId)
+        public IActionResult GetGroupUsers(int groupId)
         {
             try
             {
@@ -187,19 +188,19 @@ namespace Runbook.API.Controllers
                     }
                     else
                     {
-                        return Ok("No users found for this Group");
+                        return NotFound($"No users found for this Group : {groupId}");
                     }
                 }
                 else
                 {
-                    _logger.LogError($"Invalid tenantId in GetGroupUsers : {groupId}");
-                    return BadRequest($"Invalid tenantId : {groupId}");
+                    _logger.LogError($"Invalid GroupId in GetGroupUsers : {groupId}");
+                    return BadRequest($"Invalid GroupId : {groupId}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Internal Server Error in GetGroupUsers : {ex}");
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
     }
