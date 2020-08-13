@@ -96,10 +96,12 @@ namespace Runbook.Test
             //When
             var controller = new ResourceController(logger.Object,resourceServiceMoq.Object);
             var response = controller.GetAllResourceTypes(tenantId) as OkObjectResult;
+            var responseObj = response.Value as List<ResourceType>;
             
             //Then
             Assert.IsType<OkObjectResult>(response);
             Assert.NotNull(response.Value);
+            Assert.True(responseObj.Count > 0);
             resourceServiceMoq.Verify(r => r.GetResourceTypes(tenantId),Times.Once);
         }
 
@@ -210,10 +212,12 @@ namespace Runbook.Test
             //When
             var controller = new ResourceController(logger.Object,resourceServiceMoq.Object);
             var response = controller.GetAllResources(tenantId) as OkObjectResult;
+            var responseObj = response.Value as List<Resource>;
             
             //Then
             Assert.IsType<OkObjectResult>(response);
             Assert.NotNull(response.Value);
+            Assert.True(responseObj.Count > 0);
             resourceServiceMoq.Verify(r => r.GetAllResources(tenantId),Times.Once);
         }
 
