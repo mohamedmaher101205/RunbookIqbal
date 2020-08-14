@@ -1,6 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>8dfb7869-4aeb-4ba0-856b-4836a560dfbf</UserSecretsId>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin/RunbookXmlDocumentation.xml</DocumentationFile>
   </PropertyGroup>
