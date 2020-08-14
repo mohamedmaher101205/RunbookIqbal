@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Runbook.API.Controllers;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 
 namespace Runbook.Test
 {
@@ -42,6 +43,24 @@ namespace Runbook.Test
         }
 
         [Fact]
+        public void GetTenant_Successfull_201statuscheck()
+        {
+            int tenantId = 1;
+            Tenant tenant = null;
+            userServiceMoq.Setup(c => c.GetTenant(tenantId)).Returns(tenant);
+            // Act
+            var controller = new UserController(logger.Object, userServiceMoq.Object, mailService.Object);
+            var result = controller.GetTenant(tenantId);
+
+            // assert
+            var statusResult = result.Result as ObjectResult;
+            Assert.NotNull(statusResult);
+            Assert.Equal(201, statusResult.StatusCode);
+            Assert.Equal("No Tenants for this userId", statusResult.Value);
+            userServiceMoq.Verify(c => c.GetTenant(tenantId), Times.Once());
+        }
+
+        [Fact]
         public void GetTenant_badrequest()
         {
             int tenantId = 0;
@@ -52,17 +71,19 @@ namespace Runbook.Test
 
             // assert
             Assert.IsType<BadRequestObjectResult>(result.Result);
-            var okResult = result.Result as BadRequestObjectResult;
-            Assert.NotNull(okResult);
-            Assert.Equal(400, okResult.StatusCode);
+            var badResult = result.Result as BadRequestObjectResult;
+            Assert.NotNull(badResult);
+            Assert.Equal(400, badResult.StatusCode);
+            Assert.Equal($"Invalid UserId : {tenantId}", badResult.Value);
         }
 
         [Fact]
-        public void GetAllUsers_Returns_Userss()
+        public void GetAllUsers_Returns_Users()
         {
             //Arrange
+            IEnumerable<User> objUserlist = new List<User>() { new User { UserId = 1 }, new User { UserId = 2 } };
             int tenantId = 1;
-            userServiceMoq.Setup(c => c.GetAllUsers(tenantId)).Returns(It.IsAny<IEnumerable<User>>());
+            userServiceMoq.Setup(c => c.GetAllUsers(tenantId)).Returns(objUserlist);
 
             //Act
             var controller = new UserController(logger.Object, userServiceMoq.Object,mailService.Object);
@@ -72,6 +93,7 @@ namespace Runbook.Test
             var okResult = result.Result as OkObjectResult;
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(objUserlist, okResult.Value);
             userServiceMoq.Verify(c => c.GetAllUsers(tenantId), Times.Once());
         }
         [Fact]
@@ -90,6 +112,7 @@ namespace Runbook.Test
             var okResult = result.Result as OkObjectResult;
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(retVal, okResult.Value);
             userServiceMoq.Verify(c => c.GetAllUsers(tenantId), Times.Once());
         }
 
