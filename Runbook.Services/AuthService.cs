@@ -74,7 +74,7 @@ namespace Runbook.Services
                         if (res != null)
                         {
                             UserParams.Add("@TenantId", res.TenantId);
-                            UserParams.Add("@IsAdmin", "false");
+                            UserParams.Add("@IsAdmin", "true");
                             userRegistered = con.Execute("[dbo].sp_CreateUser", UserParams, commandType: CommandType.StoredProcedure);
                             int createdUserId = UserParams.Get<int>("@RegisteredUserId");
                         }
