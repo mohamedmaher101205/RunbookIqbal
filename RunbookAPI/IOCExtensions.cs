@@ -17,11 +17,11 @@ namespace Runbook.API
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        /// <returns></returns>
+        /// <returns></returns> 
         public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDbConnection>((connection) =>
-                new SqlConnection(configuration["ConnectionStrings:Default"])
+                new SqlConnection(configuration.GetConnectionString("Default"))
             );
 
             services.AddScoped<IBookService, BookService>();
