@@ -17,7 +17,7 @@ namespace Runbook.API
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        /// <returns></returns>        public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
+        /// <returns></returns> 
         public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IDbConnection>((connection) =>
