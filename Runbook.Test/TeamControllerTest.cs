@@ -101,11 +101,11 @@ namespace Runbook.Test
             
             //When
             var controller = new TeamController(logger.Object,teamServiceMoq.Object);
-            var response = await controller.CreateTeam(team);
+            var response = await controller.CreateTeam(team) as ConflictObjectResult;
             
             //Then
             Assert.IsType<ConflictObjectResult>(response);
-            //Assert.Equal($"Team {team.TeamName} already exist for the Tenant",response.Value);
+            Assert.Equal($"Team {team.TeamName} already exist for the Tenant",response.Value);
         }
 
         [Fact]
@@ -119,11 +119,12 @@ namespace Runbook.Test
             
             //When
             var controller = new TeamController(logger.Object,teamServiceMoq.Object);
-            var response = await controller.GetAllTeams(tenantId);
+            var response = await controller.GetAllTeams(tenantId) as OkObjectResult;
+            var responseObj = response.Value as List<Team>;
 
             //Then
             Assert.IsType<OkObjectResult>(response);
-           // Assert.NotNull(response.Value);
+            Assert.True(responseObj.Count > 0);
             teamServiceMoq.Verify(e => e.GetAllTeams(tenantId),Times.Once);
         }
 
