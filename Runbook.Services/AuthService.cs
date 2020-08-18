@@ -40,10 +40,12 @@ namespace Runbook.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns>success or failed or user exist message</returns>
-        public string RegisterUser(User user)
+        public IEnumerable<InviteUsers> RegisterUser(User user, out string msg)
         {
             try
             {
+                IEnumerable<InviteUsers> userInvite = null;
+
                 if (!string.IsNullOrEmpty(user.Password))
                 {
                     user.Password = EncodePasswordToBase64(user.Password);
@@ -96,19 +98,27 @@ namespace Runbook.Services
                             userRegistered = con.Execute("[dbo].sp_CreateUser", UserParams, commandType: CommandType.StoredProcedure);
                             int createdUserId = UserParams.Get<int>("@RegisteredUserId");
                         }
+                        var inviteUserparams = new DynamicParameters();
+                        inviteUserparams.Add("@InviteUserEmailId", user.UserEmail);
+                        userInvite = con.Query<InviteUsers>("[dbo].sp_getInviteUserDetails", inviteUserparams, commandType: CommandType.StoredProcedure);
                     }
+
                     else
                     {
-                        return "User exist";
+                        msg = "User exist";
+
+                        return userInvite;
                     }
                 }
                 if (userRegistered > 0)
                 {
-                    return "successfull";
+                    msg = "successfull";
+                    return userInvite;
                 }
                 else
                 {
-                    return "failed";
+                    msg = "failed";
+                    return userInvite;
                 }
             }
             catch (Exception ex)

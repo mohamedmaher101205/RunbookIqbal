@@ -7,6 +7,7 @@ using Runbook.Models;
 using Runbook.API.Controllers;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace Runbook.Test
 {
@@ -99,7 +100,7 @@ namespace Runbook.Test
                 UserEmail = "",
                 Password = "WrongPassword"
             };
-            
+              var expectedValue = "User exist";
             // Act
             var controller = new AuthController(authServiceMoq.Object,logger.Object);
             var response = controller.Login(user) as BadRequestObjectResult;
@@ -109,7 +110,7 @@ namespace Runbook.Test
             Assert.Equal("Email should not be empty",response.Value);
         }
 
-        [Fact]
+            [Fact]
         public void Register_Successful()
         {
             // Arrange
@@ -119,7 +120,8 @@ namespace Runbook.Test
                 FirstName = "X",
                 LastName = "Unit",
             };
-            authServiceMoq.Setup(c => c.RegisterUser(user)).Returns("successfull");
+            var expectedValue = "successfull";
+            authServiceMoq.Setup(c => c.RegisterUser(user,out expectedValue)).Returns(It.IsAny<IEnumerable<InviteUsers>>());
             
             // Act
             var controller = new AuthController(authServiceMoq.Object,logger.Object);
@@ -127,10 +129,10 @@ namespace Runbook.Test
             
             // Assert
             Assert.IsType<OkObjectResult>(response);
-            Assert.Equal("User registered successfully",response.Value);
-            authServiceMoq.Verify(c => c.RegisterUser(user),Times.Once);
+            Assert.Equal(200,response.StatusCode);
+            authServiceMoq.Verify(c => c.RegisterUser(user,out expectedValue),Times.Once);
         }
-
+        
         [Fact]
         public void Register_UserWithSameEMail_Exist()
         {
@@ -141,7 +143,9 @@ namespace Runbook.Test
                 FirstName = "X",
                 LastName = "Unit",
             };
-            authServiceMoq.Setup(c => c.RegisterUser(user)).Returns("User exist");
+            var expectedValue = "User exist";
+            authServiceMoq.Setup(c => c.RegisterUser(user,out expectedValue)).Returns(It.IsAny<IEnumerable<InviteUsers>>());
+            
             
             // Act
             var controller = new AuthController(authServiceMoq.Object,logger.Object);
@@ -150,7 +154,7 @@ namespace Runbook.Test
             // Assert
             Assert.IsType<ConflictObjectResult>(response);
             Assert.Equal("User with same email already exist",response.Value);
-            authServiceMoq.Verify(c => c.RegisterUser(user),Times.Once);
+            authServiceMoq.Verify(c => c.RegisterUser(user,out expectedValue),Times.Once);
         }
 
         [Fact]

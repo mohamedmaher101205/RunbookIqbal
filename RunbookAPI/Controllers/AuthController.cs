@@ -88,19 +88,19 @@ namespace Runbook.API.Controllers
             {
                 if (!string.IsNullOrEmpty(user.UserEmail) && !string.IsNullOrEmpty(user.Password))
                 {
-                    var UserRegistration = _auth.RegisterUser(user);
+                    var UserRegistration = _auth.RegisterUser(user, out string msg);
 
-                    if (UserRegistration == "User exist")
+                    if (msg == "User exist")
                     {
-                        return Conflict("User with same email already exist"); 
+                        return Conflict("User with same email already exist");
                         //return StatusCode(StatusCodes.Status206PartialContent,"User with same email already exist");
                     }
-                    else if (UserRegistration == "successfull")
+                    else if (msg == "successfull")
                     {
-                        return Ok("User registered successfully");
+                        return Ok(UserRegistration);
                     }
                     else
-                    return StatusCode(StatusCodes.Status500InternalServerError, UserRegistration);
+                        return StatusCode(StatusCodes.Status500InternalServerError, UserRegistration);
                 }
                 else
                 {
