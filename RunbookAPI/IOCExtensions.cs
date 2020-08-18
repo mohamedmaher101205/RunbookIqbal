@@ -20,8 +20,11 @@ namespace Runbook.API
         /// <returns></returns> 
         public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
         {
+            string Conn = configuration.GetConnectionString("Default");
+            Conn = AuthService.DecodeFrom64(Conn);
+
             services.AddTransient<IDbConnection>((connection) =>
-                new SqlConnection(configuration.GetConnectionString("Default"))
+                new SqlConnection(Conn)
             );
 
             services.AddScoped<IBookService, BookService>();
