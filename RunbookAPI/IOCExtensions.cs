@@ -47,6 +47,8 @@ namespace Runbook.API
 
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
+            services.AddScoped<ITeamService,TeamService>();
+
             services.AddTransient<IMailService, MailService>();
 
             return services;
