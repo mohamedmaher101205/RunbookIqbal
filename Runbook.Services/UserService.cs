@@ -113,6 +113,50 @@ namespace Runbook.Services
             {
                 throw ex;
             }
+
+
         }
+        public bool CreateInviteUsers(InviteUsers inviteUsers)
+        {
+            InviteUsers userExist = null;
+            var UserEmail = inviteUsers.InviteUserEmailId;
+            string userCmd = @"SELECT id FROM [dbo].[InviteUser] WHERE InviteUserEmailId = @InviteUserEmailId";
+            var inviteUserparams = new DynamicParameters();
+            inviteUserparams.Add("@InviteUserEmailId", inviteUsers.InviteUserEmailId);
+            inviteUserparams.Add("@InviteUrl", inviteUsers.InviteUrl);
+            inviteUserparams.Add("@InviteRoleLevel", inviteUsers.InviteRoleLevel);
+
+            inviteUserparams.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+
+            using (IDbConnection con = _Idbconnection)
+            {
+                con.Open();
+
+                userExist = con.QuerySingleOrDefault<InviteUsers>(userCmd, new { InviteUserEmailId = UserEmail });
+                if (userExist != null)
+                {
+                    return false;
+                }
+                var sqltrans = con.BeginTransaction();
+                var createdInviteUser = con.Execute("[dbo].sp_CreateInviteUser", inviteUserparams, sqltrans, 0, commandType: CommandType.StoredProcedure);
+
+
+                if (createdInviteUser > 0)
+                {
+                    sqltrans.Commit();
+                }
+                else
+                {
+                    sqltrans.Rollback();
+                }
+                con.Close();
+
+                if (createdInviteUser > 0)
+                    return true;
+
+            }
+            return false;
+        }
+
     }
 }

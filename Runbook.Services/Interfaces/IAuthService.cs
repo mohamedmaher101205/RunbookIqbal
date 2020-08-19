@@ -1,4 +1,5 @@
 using Runbook.Models;
+using System.Collections.Generic;
 
 namespace Runbook.Services.Interfaces
 {
@@ -19,7 +20,7 @@ namespace Runbook.Services.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        string RegisterUser(User user);
+       IEnumerable<InviteUsers> RegisterUser(User user, out string msg);
 
         /// <summary>
         /// 
