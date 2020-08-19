@@ -4,6 +4,7 @@ using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
 using Microsoft.AspNetCore.Http;
+using Runbook.API.Templates;
 
 namespace Runbook.API.Controllers
 {
@@ -18,15 +19,18 @@ namespace Runbook.API.Controllers
         private readonly IAuthService _auth;
         private readonly ILogger _logger;
 
+        private readonly IMailService _mail;
+
         /// <summary>
         /// This contructor is to inject object using dependency injection
         /// </summary>
         /// <param name="auth"></param>
         /// <param name="logger"></param>
-        public AuthController(IAuthService auth, ILogger<AuthController> logger)
+        public AuthController(IAuthService auth, ILogger<AuthController> logger, IMailService mail)
         {
             _auth = auth;
             _logger = logger;
+            _mail = mail;
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace Runbook.API.Controllers
         {
             try
             {
-                if(!string.IsNullOrEmpty(user.UserEmail))
+                if (!string.IsNullOrEmpty(user.UserEmail))
                 {
                     IActionResult response = Unauthorized();
                     AuthRequest token = null;
@@ -112,6 +116,81 @@ namespace Runbook.API.Controllers
             {
                 _logger.LogError($"Internal Server error in Register user : {ex}");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server Error");
+            }
+        }
+
+        [HttpPost]
+        [Route("ForgotPasswordSendOTP")]
+        public IActionResult ForgotPasswordSendOTP([FromBody] User user)
+        {
+            try
+            {
+                ///user.UserEmail = "anishetty6666@gmail.com";
+                IActionResult response = Unauthorized();
+                bool isExistingUser;
+
+                isExistingUser = _auth.checkExistingUser(user);
+
+
+                if (isExistingUser is true)
+                {
+                    string OTP = _auth.OTPGenrate();
+                    if (!string.IsNullOrEmpty(OTP))
+                    {
+                        string body = OneTimePasswordTemplate.emailTemplate;
+
+                        body = body.Replace("{OTP}", OTP);
+                        string subject = "One-time password";
+                        _mail.SendEmail(user.UserEmail, subject, body);
+                    }
+
+                    response = Ok(OTP);
+                }
+                else{
+                    return BadRequest("User email doesn't exist");
+                }
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal server error in Login : {ex}");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+        [HttpPost]
+        [Route("ResetPassword")]
+        public IActionResult ResetPassword([FromBody] User user)
+        {
+
+            try
+            {
+                if (!string.IsNullOrEmpty(user.UserEmail))
+                {
+                    var UserRegistration = _auth.ResetPassword(user);
+
+                    if (UserRegistration == "UserNotExist")
+                    {
+                        return BadRequest("User Not exist");
+                    }
+                    else if (UserRegistration == "successfull")
+                    {
+                        return Ok("Password Changed successfully");
+                    }
+                    else
+                        return StatusCode(206, UserRegistration);
+                }
+                else
+                {
+                    _logger.LogError($"User Email is empty in register user");
+                    return BadRequest("User email or password should not be empty");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal Server error in Register user : {ex}");
+                return StatusCode(500, "Internal server Error");
             }
         }
     }
