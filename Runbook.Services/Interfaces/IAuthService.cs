@@ -28,6 +28,11 @@ namespace Runbook.Services.Interfaces
         /// <param name="user"></param>
         /// <returns></returns>
         AuthRequest OpenIdAuthenticateUser(User user);
+        
+        string OTPGenrate();
+        bool checkExistingUser(User user);
+
+        string ResetPassword(User user);
 
     }
 }

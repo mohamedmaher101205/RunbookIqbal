@@ -71,6 +71,9 @@ namespace Runbook.Services
                         UserParams.Add("@LastName", user.LastName);
                         UserParams.Add("@UserEmail", user.UserEmail);
                         UserParams.Add("@Password", user.Password);
+                        UserParams.Add("@Phone", user.Phone);
+                        UserParams.Add("@Designation", user.Designation);
+                        UserParams.Add("@Organization", user.Organization);
                         UserParams.Add("@RegisteredUserId", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
                         if (res != null)
@@ -192,6 +195,114 @@ namespace Runbook.Services
                 throw ex;
             }
         }
+        public bool checkExistingUser(User user)
+        {
+            try
+            {
+                User response = null;
+
+
+                response = _user.GetUser(user);
+
+                if (response != null)
+                {
+
+                    // JwtTokenGenerator jwt = new JwtTokenGenerator(_config);
+                    // token = _jwtTokenGenerator.GenerateToken(response);
+                    return true;
+                }
+
+                return false;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public string OTPGenrate()
+        {
+            try
+            {
+
+                char[] charArr = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+                string strrandom = string.Empty;
+                Random objran = new Random();
+                int noofcharacters = Convert.ToInt32("6");
+                for (int i = 0; i < noofcharacters; i++)
+                {
+                    //It will not allow Repetation of Characters
+                    int pos = objran.Next(1, charArr.Length);
+                    if (!strrandom.Contains(charArr.GetValue(pos).ToString()))
+                        strrandom += charArr.GetValue(pos);
+                    else
+                        i--;
+                }
+
+                return strrandom;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public string ResetPassword(User user)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(user.Password))
+                {
+                    user.Password = EncodePasswordToBase64(user.Password);
+
+                }
+                string userCmd = @"SELECT UserId FROM [dbo].[User] WHERE UserEmail = @UserEmail";
+
+                User userExist = null;
+
+                using (IDbConnection con = _Idbconnection)
+                {
+                    con.Open();
+                    userExist = con.QuerySingleOrDefault<User>(userCmd, new { UserEmail = user.UserEmail });
+                    if (userExist != null)
+                    {
+
+                        string updatecmd = @"UPDATE [dbo].[User] SET Password = @Password
+                                WHERE UserEmail = @UserEmail";
+                        int affectedRows = 0;
+
+                        var sqltrans = con.BeginTransaction();
+                        affectedRows = con.Execute(updatecmd,
+                        new
+                        {
+                            Password = user.Password,
+                            UserEmail = user.UserEmail
+
+                        }, sqltrans);
+
+                        if (affectedRows > 0)
+                        {
+                            sqltrans.Commit();
+                            return "successfull";
+                        }
+                        else
+                        {
+                            sqltrans.Rollback();
+                            return "failed";
+                        }
+
+                    }
+                    else
+                    {
+                        return "UserNotExist";
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         /// <summary>
         ///  copy default for application type, environments, resource types
@@ -286,5 +397,6 @@ namespace Runbook.Services
             string result = new String(decoded_char);
             return result;
         }
+
     }
 }

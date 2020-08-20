@@ -13,8 +13,9 @@ namespace Runbook.Services.Interfaces
         /// <param name="toEmail"></param>
         /// <param name="subject"></param>
         /// <param name="body"></param>
+        /// <param name="subscribers"></param>
         /// <returns></returns>
-        System.Threading.Tasks.Task SendEmail(string toEmail, string subject, string body);
+        System.Threading.Tasks.Task SendEmail(string toEmail, string subject, string body, string subscribers);
         /// <summary>
         /// 
         /// </summary>
@@ -23,5 +24,8 @@ namespace Runbook.Services.Interfaces
         /// <param name="body"></param>
         /// <returns></returns>
         System.Threading.Tasks.Task SendEmail(List<string> toEmailLst, string subject, string body);
+
+       
+
     }
 }

@@ -4,6 +4,8 @@ using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Reflection;
+using System.Linq;
 
 namespace Runbook.Services
 {
@@ -15,13 +17,17 @@ namespace Runbook.Services
     {
         private readonly IDbConnection _Idbconnection;
 
+        private readonly IMailService _mail;
+
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="mail"></param>
         /// <param name="dbConnection"></param>
-        public TaskService(IDbConnection dbConnection)
+        public TaskService(IDbConnection dbConnection, IMailService mail)
         {
             _Idbconnection = dbConnection;
+            _mail = mail;
         }
 
         /// <summary>
@@ -39,6 +45,8 @@ namespace Runbook.Services
             string envcmd = @"SELECT * FROM [dbo].[STAGES]
                             WHERE BookId = @BookId AND StageName = @StageName";
 
+            string subject = null;
+            string body = null;
             int taskCreated = 0;
             IEnumerable<Stage> stagesInEnvs = null;
             List<Task> createTaskForEnvs = new List<Task>();
@@ -46,8 +54,13 @@ namespace Runbook.Services
             using (IDbConnection con = _Idbconnection)
             {
                 con.Open();
-                //var sqltrans = con.BeginTransaction();
-                stagesInEnvs = con.Query<Stage>(envcmd, new { BookId = bookId, StageName = stageName });
+                var sqltrans = con.BeginTransaction();
+                var runbookName = con.Query<Book>("SELECT * FROM [dbo].[BOOK] WHERE BookId=@BookId", new { BookId = bookId }, sqltrans).Select(c => c.BookName).FirstOrDefault();
+                var statusname = con.Query<Status>("SELECT * FROM [dbo].[STATUS] WHERE StatusId=@StatusId", new { StatusId = task.StatusId }, sqltrans).Select(b => b.Description).FirstOrDefault();
+                var tenantname = con.Query<Tenant>("select * from Tenant where TenantId =@TenantId", new { TenantId = task.TenantId }, sqltrans).Select(b => b.TenantName).FirstOrDefault();
+                subject = $"{runbookName} Task#{task.TaskId}";
+                body = @"<section><p>Hi Team,</p> <p>" + runbookName + " - task#" + task.TaskId.ToString() + " has been" + statusname + "<p>Regards</p><p>" + tenantname + "</p></section>";
+                stagesInEnvs = con.Query<Stage>(envcmd, new { BookId = bookId, StageName = stageName }, sqltrans);
                 foreach (var stage in stagesInEnvs)
                 {
                     createTaskForEnvs.Add(new Task
@@ -60,14 +73,17 @@ namespace Runbook.Services
                         StatusId = 0
                     });
                 }
-                taskCreated = con.Execute(taskcmd, createTaskForEnvs);
+                taskCreated = con.Execute(taskcmd, createTaskForEnvs, sqltrans);
 
-                // if(taskCreated > 0){
-                //     sqltrans.Commit();
-                // }
-                // else{
-                //     sqltrans.Rollback();
-                // }
+                if (taskCreated > 0)
+                {
+                    sqltrans.Commit();
+                    _mail.SendEmail(task.AssignedTo, subject, body, string.Empty);
+                }
+                else
+                {
+                    sqltrans.Rollback();
+                }
                 con.Close();
             }
             if (taskCreated > 0)
@@ -87,7 +103,10 @@ namespace Runbook.Services
         /// <returns>list of tasks</returns>
         public IEnumerable<Task> GetAllTasks(int stageId)
         {
-            string taskscmd = @"SELECT * FROM [dbo].[Task] WHERE StageId=@StageId";
+            string taskscmd = @"SELECT T.TaskId,T.TaskName,T.StageId,T.Description as Description, T.CompletedByDate,
+                                T.AssignedTo,T.ReleaseNote,T.TenantId, S.description as StatusDescription,T.StatusId 
+                                FROM [dbo].[Task] T
+                                    JOIN dbo.[status] S ON T.StatusId = S.StatusId";
 
             IEnumerable<Task> tasks = null;
             using (IDbConnection con = _Idbconnection)
@@ -211,20 +230,40 @@ namespace Runbook.Services
         {
             try
             {
+                BookService bookService = new BookService(_Idbconnection);
+                var statusname = bookService.GetStatuses().Where(u => u.StatusId == task.StatusId).Select(b => b.Description).FirstOrDefault();
+                string subject = $"{task.TaskName} Task#{task.TaskId}";
+                string body = null;
                 string updateTaskCmd = @"UPDATE [dbo].[Task] SET TaskName = @TaskName, Description = @Description,
-	                                        ReleaseNote = @ReleaseNote WHERE TaskId = @TaskId";
+	                                        ReleaseNote = @ReleaseNote,AssignedTo = @AssignedTo,StatusId = @StatusId,Subscribers = @Subscribers
+                                            WHERE TaskId = @TaskId";
 
                 int taskUpdated = 0;
                 using (IDbConnection con = _Idbconnection)
                 {
                     con.Open();
+                    var sqltrans = con.BeginTransaction();
+                    var tenantname = con.Query<Tenant>("SELECT * FROM [dbo].[Tenant]", sqltrans).Where(u => u.TenantId == task.TenantId).Select(b => b.TenantName).FirstOrDefault();
+                    body = @"<section><p>Hi Team,</p> <p>" + task.TaskName + " task#" + taskId.ToString() + " has been " + statusname + " </p><p>Regards</p><p>" + tenantname + "</p></section>";
                     taskUpdated = con.Execute(updateTaskCmd, new
                     {
                         TaskName = task.TaskName,
                         Description = task.Description,
                         ReleaseNote = task.ReleaseNote,
-                        TaskId = task.TaskId
-                    });
+                        TaskId = task.TaskId,
+                        AssignedTo = task.AssignedTo,
+                        StatusId = task.StatusId,
+                        Subscribers = task.Subscribers
+                    }, sqltrans);
+                    if (taskUpdated > 0)
+                    {
+                        sqltrans.Commit();
+                        _mail.SendEmail(task.AssignedTo, subject, body, task.Subscribers);
+                    }
+                    else
+                    {
+                        sqltrans.Rollback();
+                    }
                     con.Close();
                 }
                 return taskUpdated;
@@ -232,6 +271,53 @@ namespace Runbook.Services
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// modify the task for subscriber
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="emailId"></param>
+        /// <returns>true or false</returns>
+        public bool subscribeTask(int taskId, string emailId)
+        {
+            string taskupdatecmd = @"UPDATE Task SET Subscribers= @emailId WHERE TaskId = @taskId";
+            int taskemailupdate = 0;
+            string subject = null;
+            string body = null;
+            int TaskId = taskId;
+            string Subscribers = emailId;
+            using (IDbConnection con = _Idbconnection)
+            {
+                con.Open();
+                var sqltrans = con.BeginTransaction();
+                var task = con.Query<Task>("SELECT * FROM Task WHERE TaskId = @taskId", new { TaskId = taskId }, sqltrans).FirstOrDefault();
+                var statusname = con.Query<Status>("SELECT * FROM [dbo].[STATUS] WHERE StatusId=@StatusId", new { StatusId = task.StatusId }, sqltrans).Select(b => b.Description).FirstOrDefault();
+                var tenantname = con.Query<Tenant>("select * from Tenant where TenantId =@TenantId", new { TenantId = task.TenantId }, sqltrans).Select(b => b.TenantName).FirstOrDefault();
+                body = @"<section><p>Hi Team,</p> <p>" + task.TaskName + " - task#" + task.TaskId.ToString() + " has been" + statusname + "<p>Regards</p><p>" + tenantname + "</p></section>";
+                subject = $"{task.TaskName} - Task#{taskId}";
+
+                taskemailupdate = con.Execute(taskupdatecmd, new { taskId = taskId, emailId = emailId }, sqltrans);
+                //Must declare the scalar variable "@emailId".
+                if (taskemailupdate > 0)
+                {
+                    sqltrans.Commit();
+                    _mail.SendEmail(task.AssignedTo, subject, body, emailId);
+                }
+                else
+                {
+                    sqltrans.Rollback();
+                }
+                con.Close();
+            }
+            if (taskemailupdate > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
