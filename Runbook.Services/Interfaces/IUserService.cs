@@ -26,7 +26,17 @@ namespace Runbook.Services.Interfaces
         /// <param name="tenantId"></param>
         /// <returns></returns>
         IEnumerable<User> GetAllUsers(int tenantId);
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inviteUsers"></param>
+        /// <returns></returns>
         bool CreateInviteUsers(InviteUsers inviteUsers);
+         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        List<InviteUsers> GetInviteUsers(int tenantId);
     }
 }

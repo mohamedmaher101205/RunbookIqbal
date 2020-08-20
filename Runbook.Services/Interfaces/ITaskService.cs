@@ -45,5 +45,12 @@ namespace Runbook.Services.Interfaces
         /// <param name="task"></param>
         /// <returns></returns>
         int UpdateTask(int taskId, Task task);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        IEnumerable<Task> GetAllTasksByBookID(int bookId);
     }
 }

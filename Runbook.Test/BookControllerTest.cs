@@ -15,6 +15,9 @@ namespace Runbook.Test
     {
         private readonly Mock<IBookService> bookServiceMoq;
         private readonly Mock<ILogger<BookController>> logger;
+        private readonly Mock<IUserService> userService;
+        private readonly Mock<IMailService> mailService;
+        private readonly Mock<ITaskService> taskService;
         public BookControllerTest()
         {
             bookServiceMoq = new Mock<IBookService>();
@@ -36,7 +39,7 @@ namespace Runbook.Test
             };
             bookServiceMoq.Setup(c => c.CreateBook(book)).Returns(true);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.CreateBook(book);
             // Assert
             Assert.IsType<OkObjectResult>(response);
@@ -64,7 +67,7 @@ namespace Runbook.Test
 
             bookServiceMoq.Setup(c => c.CreateBook(book)).Returns(false);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.CreateBook(book);
             // Assert
 
@@ -82,7 +85,7 @@ namespace Runbook.Test
             int BookId = 1;
             bookServiceMoq.Setup(c => c.GetBook(BookId)).Returns(It.IsAny<Book>());
             //Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
 
             var result = controller.GetBook(BookId);
             //assert
@@ -101,7 +104,7 @@ namespace Runbook.Test
             int BookId = 0;
             //Act
             bookServiceMoq.Setup(c => c.GetBook(BookId)).Returns(It.IsAny<Book>());
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var result = controller.GetBook(BookId);
             var BadRequest = result.Result as BadRequestObjectResult;
             // assert
@@ -120,13 +123,13 @@ namespace Runbook.Test
             int UserId = 1;
             bookServiceMoq.Setup(c => c.GetAllBooks(UserId, BookId)).Returns(It.IsAny<IEnumerable<Book>>());
             //Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
 
             var result = controller.GetAllBooks(UserId, BookId);
             // assert
             Assert.IsType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
-             Assert.NotNull(okResult);
+            Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             bookServiceMoq.Verify(c => c.GetAllBooks(UserId, BookId), Times.Once());
 
@@ -140,7 +143,7 @@ namespace Runbook.Test
             int UserId = 0;
             bookServiceMoq.Setup(c => c.GetAllBooks(UserId, BookId)).Returns(It.IsAny<IEnumerable<Book>>());
             //Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var result = controller.GetAllBooks(UserId, BookId);
             var BadRequest = result.Result as BadRequestObjectResult;
             // assert
@@ -159,14 +162,14 @@ namespace Runbook.Test
 
             bookServiceMoq.Setup(c => c.GetStatuses()).Returns(It.IsAny<IEnumerable<Status>>());
             //Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
 
             var result = controller.GetStatuses();
 
             // assert
             Assert.IsType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
-             Assert.NotNull(okResult);
+            Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             bookServiceMoq.Verify(c => c.GetStatuses(), Times.Once());
 
@@ -181,7 +184,7 @@ namespace Runbook.Test
             int statusId = 1;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(true);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
             Assert.IsType<OkObjectResult>(response);
@@ -203,7 +206,7 @@ namespace Runbook.Test
             int statusId = 1;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(false);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
@@ -224,7 +227,7 @@ namespace Runbook.Test
             int statusId = 1;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(false);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
 
@@ -249,7 +252,7 @@ namespace Runbook.Test
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(false);
             // Act
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
@@ -271,7 +274,7 @@ namespace Runbook.Test
             int statusId = 0;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(false);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
@@ -293,7 +296,7 @@ namespace Runbook.Test
             int statusId = 0;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(false);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
@@ -313,7 +316,7 @@ namespace Runbook.Test
             int statusId = 1;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(false);
             // Act
-            var controller = new BookController(logger.Object, bookServiceMoq.Object);
+            var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
             var response = controller.UpdateBookByEnvironment(bookId, envId, statusId);
             // Assert
             Assert.IsType<BadRequestObjectResult>(response);
