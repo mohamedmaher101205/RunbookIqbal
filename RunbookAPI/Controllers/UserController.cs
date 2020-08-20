@@ -87,7 +87,7 @@ namespace Runbook.API.Controllers
                 string body = InviteUserTemplate.emailTemplate;
                 //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
                 _logger.LogInformation("Preparing an Email");
-                await _mail.SendEmail(email, subject, body);
+                await _mail.SendEmail(email, subject, body,string.Empty);
                 _logger.LogInformation("Email sent");
                 return Ok("Email sent successfully");
             }

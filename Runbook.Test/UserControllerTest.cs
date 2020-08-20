@@ -140,7 +140,7 @@ namespace Runbook.Test
             string email = "quinnox@test.com";
             string subject = "salary"; 
             string body = "salary for may";
-            mailService.Setup(c => c.SendEmail(email, subject, body));
+            mailService.Setup(c => c.SendEmail(email, subject, body,string.Empty));
             //Act
             var controller = new UserController(logger.Object, userServiceMoq.Object, mailService.Object);
             var result = controller.SendEMail(email);

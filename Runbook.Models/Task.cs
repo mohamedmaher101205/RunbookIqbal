@@ -52,5 +52,14 @@ namespace Runbook.Models
         /// </summary>
         /// <value></value>
         public string ReleaseNote { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Subscribers { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int TenantId { get; set; }
     }
 }
