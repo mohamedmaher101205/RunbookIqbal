@@ -78,11 +78,12 @@ namespace Runbook.API.Controllers
         /// <param name="email"></param>
         /// <returns>sucess message</returns>
         [HttpPost]
-        [Route("InviteUserByEmail/{email}")]
-        public async Task<IActionResult> SendEMail(string email)
+        [Route("InviteUserByEmail")]
+        public async Task<IActionResult> SendEMail([FromBody] InviteUsers inviteUsers)
         {
             try
             {
+
                 string subject = "Invitation For RunBook Application";
                 string body = InviteUserTemplate.emailTemplate;
                 //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
@@ -90,6 +91,26 @@ namespace Runbook.API.Controllers
                 await _mail.SendEmail(email, subject, body,string.Empty);
                 _logger.LogInformation("Email sent");
                 return Ok("Email sent successfully");
+
+                var res = _user.CreateInviteUsers(inviteUsers);
+
+                if (res)
+                {
+                    string subject = "Invitation For RunBook Application";
+                    string body = InviteUserTemplate.emailTemplate;
+                    //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
+                    _logger.LogInformation("Preparing an Email");
+
+                    await _mail.SendEmail(inviteUsers.InviteUserEmailId, subject, body);
+                    _logger.LogInformation("Email sent");
+                    return Ok("Email sent successfully");
+                }
+                else
+                {
+                    return Ok("User already Exist or Already Invitation Sent");
+                }
+
+
             }
             catch (Exception ex)
             {

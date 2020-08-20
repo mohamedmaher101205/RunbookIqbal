@@ -17,11 +17,14 @@ namespace Runbook.API
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        /// <returns></returns>
+        /// <returns></returns> 
         public static IServiceCollection ResolveDependencies(this IServiceCollection services, IConfiguration configuration)
         {
+            string Conn = configuration.GetConnectionString("Default");
+            Conn = AuthService.DecodeFrom64(Conn);
+
             services.AddTransient<IDbConnection>((connection) =>
-                new SqlConnection(configuration["ConnectionStrings:Default"])
+                new SqlConnection(Conn)
             );
 
             services.AddScoped<IBookService, BookService>();
@@ -43,6 +46,8 @@ namespace Runbook.API
             services.AddScoped<IGroupService, GroupService>();
 
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            services.AddScoped<ITeamService,TeamService>();
 
             services.AddTransient<IMailService, MailService>();
 

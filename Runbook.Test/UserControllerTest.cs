@@ -134,22 +134,55 @@ namespace Runbook.Test
             Assert.Equal($"Invalid tenantId : {tenantId}", BadRequest.Value);
         }
         [Fact]
-        public void SendEmail() 
+        public void SendEmail_Successfull() 
         {
-
+              InviteUsers invite = new InviteUsers
+            {
+              InviteUserEmailId = "quinnox@test.com",
+              InviteUrl = "/bookDashboard",
+              InviteRoleLevel = "Admin"
+            };
             string email = "quinnox@test.com";
             string subject = "salary"; 
             string body = "salary for may";
+
             mailService.Setup(c => c.SendEmail(email, subject, body,string.Empty));
+            userServiceMoq.Setup(c => c.CreateInviteUsers(invite)).Returns(true);
+
             //Act
             var controller = new UserController(logger.Object, userServiceMoq.Object, mailService.Object);
-            var result = controller.SendEMail(email);
+            var result = controller.SendEMail(invite);
             // assert
             Assert.IsType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             Assert.Equal("Email sent successfully", okResult.Value);
+        }
+             [Fact]
+        public void SendEmail_UnSuccessfull() 
+        {
+              InviteUsers invite = new InviteUsers
+            {
+              InviteUserEmailId = "quinnox@test.com",
+              InviteUrl = "/bookDashboard",
+              InviteRoleLevel = "Admin"
+            };
+            string email = "quinnox@test.com";
+            string subject = "salary"; 
+            string body = "salary for may";
+            userServiceMoq.Setup(c => c.CreateInviteUsers(invite)).Returns(false);
+
+            mailService.Setup(c => c.SendEmail(email, subject, body));
+            //Act
+            var controller = new UserController(logger.Object, userServiceMoq.Object, mailService.Object);
+            var result = controller.SendEMail(invite);
+            // assert
+            Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
+            Assert.NotNull(okResult);
+            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal("User already Exist or Already Invitation Sent", okResult.Value);
         }
     }
 }
