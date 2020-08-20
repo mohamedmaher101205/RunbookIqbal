@@ -159,7 +159,6 @@ namespace Runbook.Test
         public void GetStatuses_Returns_Statuses()
         {
             //Arrange
-
             bookServiceMoq.Setup(c => c.GetStatuses()).Returns(It.IsAny<IEnumerable<Status>>());
             //Act
             var controller = new BookController(logger.Object, bookServiceMoq.Object, userService.Object, mailService.Object, taskService.Object);
@@ -172,8 +171,6 @@ namespace Runbook.Test
             Assert.NotNull(okResult);
             Assert.Equal(200, okResult.StatusCode);
             bookServiceMoq.Verify(c => c.GetStatuses(), Times.Once());
-
-
         }
 
         [Fact]

@@ -31,7 +31,7 @@ namespace Runbook.Services.Interfaces
         /// 
         /// </summary>
         /// <returns></returns>
-        IEnumerable<Status> GetStatuses();
+        IEnumerable<Status> GetStatuses();  
         /// <summary>
         /// 
         /// </summary>

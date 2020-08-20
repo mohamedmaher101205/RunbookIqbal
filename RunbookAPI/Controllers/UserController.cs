@@ -83,6 +83,15 @@ namespace Runbook.API.Controllers
         {
             try
             {
+
+                string subject = "Invitation For RunBook Application";
+                string body = InviteUserTemplate.emailTemplate;
+                //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
+                _logger.LogInformation("Preparing an Email");
+                await _mail.SendEmail(email, subject, body,string.Empty);
+                _logger.LogInformation("Email sent");
+                return Ok("Email sent successfully");
+
                 var res = _user.CreateInviteUsers(inviteUsers);
 
                 if (res)
@@ -100,6 +109,7 @@ namespace Runbook.API.Controllers
                 {
                     return Ok("User already Exist or Already Invitation Sent");
                 }
+
 
             }
             catch (Exception ex)
