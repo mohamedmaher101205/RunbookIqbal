@@ -184,6 +184,44 @@ namespace Runbook.Test
         }
 
         [Fact]
+        public void subscribeTask_ReturnsSuccess()
+        {
+            //Arrange
+            int taskId =1; string emailId = "mdicpal@gmail.com";
+            bool success = true;
+            taskServiceMoq.Setup(c => c.subscribeTask(taskId, emailId)).Returns(success);
+
+            //Act
+            var controller = new TaskController(logger.Object, taskServiceMoq.Object);
+            var result = controller.subscribeTask(taskId, emailId);
+
+            // assert
+            Assert.IsType<OkObjectResult>(result.Result);
+            var okResult = result.Result as OkObjectResult;
+            Assert.NotNull(okResult);
+            Assert.Equal(200, okResult.StatusCode);
+            Assert.Equal(success, okResult.Value);
+            taskServiceMoq.Verify(c => c.subscribeTask(taskId, emailId), Times.Once);
+        }
+        [Fact]
+        public void subscribeTask_Failure_ReturnsFailure()
+        {
+            //Arrange
+            int taskId = 0; string emailId = "";
+            bool fail = false;
+            taskServiceMoq.Setup(c => c.subscribeTask(taskId, emailId)).Returns(fail);
+
+            //Act
+            var controller = new TaskController(logger.Object, taskServiceMoq.Object);
+            var result = controller.subscribeTask(taskId, emailId);
+            // assert
+            Assert.IsType<BadRequestObjectResult>(result.Result);
+            var badResult = result.Result as BadRequestObjectResult;
+            Assert.NotNull(badResult);
+            Assert.Equal(400, badResult.StatusCode);
+            Assert.Equal($"Invalid taskid : {taskId} or email Ids : {emailId}", badResult.Value);
+        }
+        [Fact]
         public void DeleteTask_Successfull()
         {
             int bookId = 1;
@@ -231,7 +269,8 @@ namespace Runbook.Test
                 AssignedTo = "Mohammed",
                 StatusId = 1,
                 ReleaseNote = "release on 12.9.2020",
-                StageName = "Pre-requisite"
+                StageName = "Pre-requisite",
+                Subscribers = "smanjunath@quinnox.com,ramkumarm@quinnox.com,anishas@quinnox.com"
             };
             int taskId = 1;
             int taskUpdated = 10;
@@ -260,7 +299,7 @@ namespace Runbook.Test
                 AssignedTo = "Mohammed",
                 StatusId = 1,
                 ReleaseNote = "release on 12.9.2020",
-                StageName = "Pre-requisite"
+                StageName = "Pre-requisite", Subscribers  = "mohammeds@quinnox.com"
             };
             int taskId = 1;
             int taskUpdated = 0;
@@ -288,7 +327,8 @@ namespace Runbook.Test
                 AssignedTo = "Mohammed",
                 StatusId = 1,
                 ReleaseNote = "release on 12.9.2020",
-                StageName = "Pre-requisite"
+                StageName = "Pre-requisite",
+                Subscribers = "mohammeds@quinnox.com"
             };
             int taskId = 0;
             int taskUpdated = 10;

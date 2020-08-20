@@ -52,5 +52,17 @@ namespace Runbook.Models
         /// </summary>
         /// <value></value>
         public List<string> Permissions { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Designation { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Organization { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Phone { get; set; }
     }
 }

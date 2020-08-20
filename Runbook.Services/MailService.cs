@@ -4,6 +4,8 @@ using Runbook.Services.Interfaces;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Runbook.Services
 {
@@ -32,11 +34,13 @@ namespace Runbook.Services
         /// <param name="toEmail"></param>
         /// <param name="subject"></param>
         /// <param name="body"></param>
+        /// <param name="subscribers"></param>
         /// <returns></returns>
-        public async System.Threading.Tasks.Task SendEmail(string toEmail, string subject, string body)
+        public async System.Threading.Tasks.Task SendEmail(string toEmail, string subject, string body, string subscribers)
         {
             try
             {
+                List<EmailAddress> emailAddresses = null;
                 if (!string.IsNullOrEmpty(toEmail))
                 {
                     _logger.LogInformation($"Preparing an EMail to send");
@@ -48,10 +52,19 @@ namespace Runbook.Services
                         Subject = subject,
                         HtmlContent = body
                     };
+                    var emailaddr = new EmailAddress(toEmail);
+                    if (!string.IsNullOrEmpty(subscribers))
+                    {
+                        emailAddresses  = new List<EmailAddress>();
+                        List<string> emailList = subscribers.Split(new char[] { ',' }).ToList();
+                        foreach (string email in emailList)
+                            emailAddresses.Add(new EmailAddress(email));
+                        message.AddTos(emailAddresses);
+                    }
 
                     message.AddTo(new EmailAddress(toEmail, ""));
+                    
                     var response = await emailClient.SendEmailAsync(message);
-
                 }
                 else
                 {

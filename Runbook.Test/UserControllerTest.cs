@@ -145,9 +145,10 @@ namespace Runbook.Test
             string email = "quinnox@test.com";
             string subject = "salary"; 
             string body = "salary for may";
+
+            mailService.Setup(c => c.SendEmail(email, subject, body,string.Empty));
             userServiceMoq.Setup(c => c.CreateInviteUsers(invite)).Returns(true);
 
-            mailService.Setup(c => c.SendEmail(email, subject, body));
             //Act
             var controller = new UserController(logger.Object, userServiceMoq.Object, mailService.Object);
             var result = controller.SendEMail(invite);
