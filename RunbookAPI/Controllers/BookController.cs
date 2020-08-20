@@ -14,7 +14,7 @@ namespace Runbook.API.Controllers
     /// This BookController class have methods to performing create a book,select particular book, 
     /// get all books,get book Statuses,modify Book by environment
     /// </summary>
-
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class BookController : ControllerBase
