@@ -14,7 +14,7 @@ namespace Runbook.API.Controllers
     /// This BookController class have methods to performing create a book,select particular book, 
     /// get all books,get book Statuses,modify Book by environment
     /// </summary>
-   
+
     [ApiController]
     [Route("[controller]")]
     public class BookController : ControllerBase
@@ -162,7 +162,7 @@ namespace Runbook.API.Controllers
             {
                 if (bookId > 0 && envId >= 0 && statusId >= 0)
                 {
-                    var isUpdated = _book.UpdateBookStatus(bookId, envId, statusId);                    
+                    var isUpdated = _book.UpdateBookStatus(bookId, envId, statusId);
                     //Runbook level notification to stack holders
                     Book book = _book.GetBook(bookId);
                     List<InviteUsers> inviteUsers = _userService.GetInviteUsers(book.TenantId);
@@ -175,7 +175,7 @@ namespace Runbook.API.Controllers
                                         <p><b>Task list:</b></p>";
                     foreach (Task t in tasks)
                     {
-                        bodystart += "<p> <h5> Task Name - </h5> </p>";
+                        bodystart += $"<p> <h5> Task Name - { t.TaskName } </h5> </p>";
                     }
 
                     bodystart += "</section>";

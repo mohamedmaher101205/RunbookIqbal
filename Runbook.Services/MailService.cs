@@ -93,13 +93,15 @@ namespace Runbook.Services
                     foreach (string emailId in toEmailLst)
                     {
                         message.AddTo(new EmailAddress(emailId, ""));
-                        try
-                        {
-                            var response = await emailClient.SendEmailAsync(message);
-                        }
-                        catch { errorEmailList += ", " + emailId; }
-                        
+                        errorEmailList += ", " + emailId;//Error emailis for reference.
                     }
+
+                    try
+                    {
+                        var response = await emailClient.SendEmailAsync(message);
+                    }
+                    catch { _logger.LogError($"Invalid Email Address Lists in SendEmail : {errorEmailList}"); }
+
                 }
                 else
                 {
