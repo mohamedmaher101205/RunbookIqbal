@@ -77,5 +77,56 @@ namespace Runbook.Services
                 throw ex;
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="toEmailLst"></param>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public async System.Threading.Tasks.Task SendEmail(List<string> toEmailLst, string subject, string body)
+        {
+            try
+            {
+                string errorEmailList = "";
+
+                if (toEmailLst!=null)
+                {
+                    _logger.LogInformation($"Preparing an EMail to send");
+                    var sendGridApiKey = _config["SendGrid:SendGridAPIKey"];
+                    var emailClient = new SendGridClient(sendGridApiKey);
+                    var message = new SendGridMessage()
+                    {
+                        From = new EmailAddress(_config["SmtpSettings:SenderEmail"], _config["SmtpSettings:SenderName"]),
+                        Subject = subject,
+                        HtmlContent = body
+                    };
+
+                    List<EmailAddress> emaillst = new List<EmailAddress>();
+                    foreach (string emailId in toEmailLst)
+                    {
+                        emaillst.Add(new EmailAddress(emailId));                        
+                        errorEmailList += ", " + emailId;//Error emailis for reference.
+                    }
+                  
+                    try
+                    {
+                        message.AddTos(emaillst);
+                        var response = await emailClient.SendEmailAsync(message);
+                    }
+                    catch { _logger.LogError($"Invalid Email Address Lists in SendEmail : {errorEmailList}"); }
+
+                }
+                else
+                {
+                    _logger.LogError($"Invalid Email Address Lists in SendEmail : {errorEmailList}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal server error in SendEmail : {ex}");
+                throw ex;
+            }
+        }
     }
 }

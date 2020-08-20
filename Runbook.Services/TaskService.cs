@@ -119,6 +119,32 @@ namespace Runbook.Services
         }
 
         /// <summary>
+        /// Fetch Tasks by Book Id
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        public IEnumerable<Task> GetAllTasksByBookID(int bookId)
+        {
+            string taskscmd = @"select TaskId,TaskName, t.Description,t.tenantID,
+                              case  
+                              when t.statusid=0 then 'Assigned' 
+                              when t.statusid=1 then 'In progress' 
+                              when t.statusid=2 then 'Completed' 
+                              when t.statusid=3 then 'Cancelled' 
+                              when t.statusid=4 then 'Rollback' 
+                              end  Status, t.StatusId
+                              from Task t   where t.TenantId=(select b.TenantId from book b where b.bookid = " + bookId + ")";
+
+            IEnumerable<Task> tasks = null;
+            IDbConnection con = _Idbconnection;
+            con.Open();
+            tasks = con.Query<Task>(taskscmd);
+            con.Close();
+            return tasks;
+        }
+
+
+        /// <summary>
         /// modify the task status
         /// </summary>
         /// <param name="taskids"></param>
