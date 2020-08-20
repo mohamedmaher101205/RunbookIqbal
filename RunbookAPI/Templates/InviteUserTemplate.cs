@@ -10,7 +10,7 @@
         /// </summary>
         public static string emailTemplate = @"<section>
     <p>Hi,</p> 
-    <p>You have been invited for the RunBook application.</p> 
+    <p>{UserName} has been invited for the {InviteRoleLevel} level of the RunBook application.</p> 
     <p>Click on the below link to register</p> 
     <p>
         <a href='https://runbook-dev.azurewebsites.net/signup'>
