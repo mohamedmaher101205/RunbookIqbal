@@ -50,6 +50,10 @@ namespace Runbook.Models
         /// <summary>
         /// 
         /// </summary>
+        public string Status { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         /// <value></value>
         public string ReleaseNote { get; set; }
 

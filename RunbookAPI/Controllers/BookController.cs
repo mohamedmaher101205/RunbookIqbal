@@ -169,14 +169,15 @@ namespace Runbook.API.Controllers
                     var subject = "Notification  Runbook Updates:" + book.BookName + ":-";
                     IEnumerable<Task> tasks = _taskService.GetAllTasksByBookID(bookId);
                     var bodystart = @"<section>
-                                        <p>Hi,</p> 
+                                        <p>Hi Team,</p> 
                                         <p>Runbook:" + book.BookName + @" status is Listed below.</p>
-                                        <p><b>Task list:</b></p>";
+                                        <p><b><u>Task list:</b></u></p>";
                     foreach (Task t in tasks)
                     {
-                        bodystart += $"<p> <h5> Task Name - { t.TaskName } </h5> </p>";
+                        bodystart += $"<p> Task - { t.TaskName } - {t.Status} </p>";
                     }
 
+                    bodystart += "<p>Regards,</p> <p> Runbook Team</p>";
                     bodystart += "</section>";
 
                     _mailService.SendEmail(list, subject, bodystart);
