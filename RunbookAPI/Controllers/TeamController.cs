@@ -110,6 +110,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the Team
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetTeam/{teamId}")]
         public async Task<ActionResult> GetTeam(int teamId)
@@ -141,6 +146,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Add the member to the particular team using teamId
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("AddMembersToTeam/{teamId}")]
         public async Task<ActionResult> AddMembersToTeam([FromBody] List<User> users,int teamId)
@@ -172,6 +183,11 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets all the team members using teamId
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("GetTeamUsers/{teamId}")]
         public async Task<ActionResult> GetTeamUsers(int teamId)
@@ -203,6 +219,12 @@ namespace Runbook.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Deletes the team members
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("RemoveTeamUser/{teamId}/{userId}")]
         public async Task<ActionResult> RemoveTeamUsers(int teamId,int userId)
