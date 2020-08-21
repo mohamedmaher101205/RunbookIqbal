@@ -89,8 +89,8 @@ namespace Runbook.API.Controllers
                 {
                     string subject = "Invitation For RunBook Application";
                     string body = InviteUserTemplate.emailTemplate;
-                     body = body.Replace("{UserName}", inviteUsers.UserName);
-                      body = body.Replace("{InviteRoleLevel}", inviteUsers.InviteRoleLevel);
+                    body = body.Replace("{UserName}", inviteUsers.UserName);
+                     body = body.Replace("{InviteRoleLevel}", inviteUsers.InviteRoleLevel);
                     //System.IO.File.ReadAllText("./Templates/InviteUserTemplate.html");
                     _logger.LogInformation("Preparing an Email");
 
