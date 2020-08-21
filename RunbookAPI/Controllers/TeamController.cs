@@ -109,5 +109,129 @@ namespace Runbook.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
         }
+
+        [HttpGet]
+        [Route("GetTeam/{teamId}")]
+        public async Task<ActionResult> GetTeam(int teamId)
+        {
+            try
+            {
+                if (teamId > 0)
+                {
+                    var team = await _team.GetTeam(teamId);
+
+                    if(team == null)
+                    {
+                        _logger.LogError($"No team found for the teamId : {teamId} in GetTeam");
+                        return NotFound($"No team found for the teamId : {teamId}");
+                    }
+
+                    return Ok(team);
+                }
+                else
+                {
+                    _logger.LogError($"Invalid teamId : {teamId} in GetTask");
+                    return BadRequest($"Invalid teamId : {teamId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal server Error in GetTeam : {ex}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
+
+        [HttpPost]
+        [Route("AddMembersToTeam/{teamId}")]
+        public async Task<ActionResult> AddMembersToTeam([FromBody] List<User> users,int teamId)
+        {
+            try
+            {
+                if (users.Count > 0 && teamId > 0)
+                {
+                    int res = await _team.AddMembersToTeam(users,teamId);
+
+                    if (res <= 0)
+                    {
+                        _logger.LogError("Unsuccessfull while adding members to team in AddMembersToTeam");
+                        return NotFound("Unsuccessfull while adding members to team ");
+                    }
+
+                    return Ok("Members Added successfully");
+                }
+                else
+                {
+                    _logger.LogError($"Invalid Users : {users} or TeamId : {teamId} in AddMembersToTeam");
+                    return BadRequest($"Invalid Users : {users} or TeamId : {teamId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal Server Error : {ex} in AddMembersToTeam");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetTeamUsers/{teamId}")]
+        public async Task<ActionResult> GetTeamUsers(int teamId)
+        {
+            try
+            {
+                if (teamId > 0)
+                {
+                    var users = await _team.GetTeamMembers(teamId);
+
+                    if(users == null)
+                    {
+                        _logger.LogError($"No team Users found for the teamId : {teamId} in GetTeamUsers");
+                        return NotFound($"No team users found for the teamId : {teamId}");
+                    }
+
+                    return Ok(users);
+                }
+                else
+                {
+                    _logger.LogError($"Invalid teamId : {teamId} in GetTeamUsers");
+                    return BadRequest($"Invalid teamId : {teamId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal server Error in GetTeamUsers : {ex}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
+
+        [HttpDelete]
+        [Route("RemoveTeamUser/{teamId}/{userId}")]
+        public async Task<ActionResult> RemoveTeamUsers(int teamId,int userId)
+        {
+            try
+            {
+                if (teamId > 0 && userId > 0)
+                {
+                    var isUserDeleted = await _team.RemoveUserFromTeam(teamId,userId);
+
+                    if(!isUserDeleted)
+                    {
+                        _logger.LogError($"No User found for the teamId : {teamId} to remove in RemoveTeamUsers");
+                        return NotFound($"No User found for the teamId : {teamId} to remove");
+                    }
+
+                    return Ok("User removed");
+                }
+                else
+                {
+                    _logger.LogError($"Invalid teamId : {teamId} or UserId : {userId} in RemoveTeamUsers");
+                    return BadRequest($"Invalid teamId : {teamId} or UserId : {userId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal server Error in RemoveTeamUsers : {ex}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+        }
     }
 }

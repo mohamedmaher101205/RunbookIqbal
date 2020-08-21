@@ -106,7 +106,8 @@ namespace Runbook.Services
             string taskscmd = @"SELECT T.TaskId,T.TaskName,T.StageId,T.Description as Description, T.CompletedByDate,
                                 T.AssignedTo,T.ReleaseNote,T.TenantId, S.description as StatusDescription,T.StatusId 
                                 FROM [dbo].[Task] T
-                                    JOIN dbo.[status] S ON T.StatusId = S.StatusId";
+                                    JOIN dbo.[status] S ON T.StatusId = S.StatusId 
+                                WHERE StageId=@StageId";
 
             IEnumerable<Task> tasks = null;
             using (IDbConnection con = _Idbconnection)
