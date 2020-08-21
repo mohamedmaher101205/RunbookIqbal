@@ -146,11 +146,12 @@ namespace Runbook.API.Controllers
                 {
                     int[] ApplicationIds = Array.ConvertAll(appIds.Split(','), int.Parse);
                     var insertedRows = _app.AddApplications(bookId, ApplicationIds);
-
+                    var book = _app.GetBookForMultipleRelease(bookId);                    
                     if (insertedRows > 0)
                     {
                         return Ok($"Inserted ${insertedRows} rows");
-                    }
+                        _app.SendMailMultipleresourceOnSameDate(book);
+                    } 
                     else
                     {
                         return NotFound("Failed to insert");

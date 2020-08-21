@@ -77,8 +77,10 @@ namespace Runbook.Services
 
                 if (taskCreated > 0)
                 {
-                    sqltrans.Commit();
-                    _mail.SendEmail(task.AssignedTo, subject, body, string.Empty);
+                    sqltrans.Commit(); 
+                    List<string> emailList = task.Subscribers.Split(',').ToList();
+                    emailList.Add(task.AssignedTo);
+                    _mail.SendEmail(emailList, subject, body);
                 }
                 else
                 {
@@ -118,7 +120,6 @@ namespace Runbook.Services
             }
             return tasks;
         }
-
         /// <summary>
         /// Fetch Tasks by Book Id
         /// </summary>
@@ -143,8 +144,6 @@ namespace Runbook.Services
             con.Close();
             return tasks;
         }
-
-
         /// <summary>
         /// modify the task status
         /// </summary>
@@ -231,8 +230,6 @@ namespace Runbook.Services
         {
             try
             {
-                BookService bookService = new BookService(_Idbconnection);
-                var statusname = bookService.GetStatuses().Where(u => u.StatusId == task.StatusId).Select(b => b.Description).FirstOrDefault();
                 string subject = $"{task.TaskName} Task#{task.TaskId}";
                 string body = null;
                 string updateTaskCmd = @"UPDATE [dbo].[Task] SET TaskName = @TaskName, Description = @Description,
@@ -244,7 +241,8 @@ namespace Runbook.Services
                 {
                     con.Open();
                     var sqltrans = con.BeginTransaction();
-                    var tenantname = con.Query<Tenant>("SELECT * FROM [dbo].[Tenant]", sqltrans).Where(u => u.TenantId == task.TenantId).Select(b => b.TenantName).FirstOrDefault();
+                    var statusname = con.Query<Status>("SELECT * FROM [dbo].[STATUS] WHERE StatusId=@StatusId", new { StatusId = task.StatusId }, sqltrans).Select(b => b.Description).FirstOrDefault();
+                    var tenantname = con.Query<Tenant>("select * from Tenant where TenantId =@TenantId", new { TenantId = task.TenantId }, sqltrans).Select(b => b.TenantName).FirstOrDefault();
                     body = @"<section><p>Hi Team,</p> <p>" + task.TaskName + " task#" + taskId.ToString() + " has been " + statusname + " </p><p>Regards</p><p>" + tenantname + "</p></section>";
                     taskUpdated = con.Execute(updateTaskCmd, new
                     {
@@ -259,7 +257,9 @@ namespace Runbook.Services
                     if (taskUpdated > 0)
                     {
                         sqltrans.Commit();
-                        _mail.SendEmail(task.AssignedTo, subject, body, task.Subscribers);
+                        List<string> emailList = task.Subscribers.Split(',').ToList();
+                        emailList.Add(task.AssignedTo);
+                        _mail.SendEmail(emailList, subject, body);
                     }
                     else
                     {
@@ -304,7 +304,9 @@ namespace Runbook.Services
                 if (taskemailupdate > 0)
                 {
                     sqltrans.Commit();
-                    _mail.SendEmail(task.AssignedTo, subject, body, emailId);
+                    List<string> emailList = task.Subscribers.Split(',').ToList();
+                    emailList.Add(task.AssignedTo);
+                    _mail.SendEmail(emailList, subject, body);
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace Runbook.Services
 {
@@ -15,13 +16,16 @@ namespace Runbook.Services
     {
         private readonly IDbConnection _Idbconnection;
 
+        private readonly IMailService _mail;
+
         /// <summary>
-        ///  This constructor is to inject IDBConnection object using constructor dependency injuction
+        /// This constructor is to inject IDBConnection using constructor dependency injuction
         /// </summary>
         /// <param name="dbConnection"></param>
-        public ApplicationService(IDbConnection dbConnection)
+        public ApplicationService(IDbConnection dbConnection, IMailService mail)
         {
             _Idbconnection = dbConnection;
+            _mail = mail;
         }
 
         /// <summary>
@@ -238,6 +242,64 @@ namespace Runbook.Services
             catch (Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        public bool SendMailMultipleresourceOnSameDate(Book book)
+        {
+            try
+            {
+                var inviteUserparams = new DynamicParameters();
+                inviteUserparams.Add("@TenantId", book.TenantId);
+
+                IEnumerable<InviteUsers> inviteUser = null;
+                string subject = "";
+                string body = "";
+                using (IDbConnection con = _Idbconnection)
+                {
+                    con.Open();
+                    inviteUser = con.Query<InviteUsers>("[sp_GetResourceOnMultipleRelease]", inviteUserparams, commandType: CommandType.StoredProcedure);
+                    var applist = con.Query<Application>("select app.* from BookApplication bookapp inner join Application app on bookapp.AppId = app.AppId and bookapp.BookId = @BookId", new { BookId = book.BookId }).Select(u =>u.ApplicationName).ToList();
+                    var appwithComma = String.Join(",  ", applist);
+                    subject = $"{book.BookName} - Conflict on Release Dates for {appwithComma}";
+                    body = @"<section><p>Hi Team,</p><p>There is a conflict in the realease date of the application - "+ appwithComma +" for "+book.BookName+"</p><p>Regards,</p><p>Runbook Team</p></section>";
+                    con.Close();
+                }
+                var emailList = inviteUser.Select(c => c.InviteUserEmailId).ToList();
+                _mail.SendEmail(emailList, subject, body);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Book GetBookForMultipleRelease(int id)
+        {
+            string bookcmd = @"SELECT * FROM [dbo].[BOOK] WHERE BookId=@BookId";
+            try
+            {
+                Book book = null;
+                IDbConnection con = _Idbconnection;
+                con.Open();
+                book = con.QueryFirstOrDefault<Book>(bookcmd, new { BookId = id });
+                con.Close();
+                return book;
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
     }
