@@ -157,11 +157,14 @@ namespace Runbook.Services
         {
             InviteUsers userExist = null;
             var UserEmail = inviteUsers.InviteUserEmailId;
-            string userCmd = @"SELECT id FROM [dbo].[InviteUser] WHERE InviteUserEmailId = @InviteUserEmailId";
+            string userCmd = @"SELECT id FROM [dbo].[InviteUser] WHERE InviteUserEmailId = @InviteUserEmailId AND  TenantId =@TenantId AND InviteUrl =@InviteUrl AND InviteRoleLevel=@InviteRoleLevel";
             var inviteUserparams = new DynamicParameters();
             inviteUserparams.Add("@InviteUserEmailId", inviteUsers.InviteUserEmailId);
             inviteUserparams.Add("@InviteUrl", inviteUsers.InviteUrl);
             inviteUserparams.Add("@InviteRoleLevel", inviteUsers.InviteRoleLevel);
+            inviteUserparams.Add("@TenantId", Convert.ToInt32(inviteUsers.TenantId));
+             inviteUserparams.Add("@UserId", Convert.ToInt32(inviteUsers.UserId));
+            inviteUserparams.Add("@Accepted", inviteUsers.Accepted);
 
             inviteUserparams.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
@@ -169,8 +172,8 @@ namespace Runbook.Services
             {
                 con.Open();
 
+                userExist = con.QuerySingleOrDefault<InviteUsers>(userCmd, new { InviteUserEmailId = UserEmail,InviteUrl= inviteUsers.InviteUrl,InviteRoleLevel=inviteUsers.InviteRoleLevel,TenantId=inviteUsers.TenantId,UserId= inviteUsers.UserId });
 
-                userExist = con.QuerySingleOrDefault<InviteUsers>(userCmd, new { InviteUserEmailId = UserEmail });
                 if (userExist != null)
                 {
                     return false;
