@@ -163,29 +163,31 @@ namespace Runbook.API.Controllers
                 if (bookId > 0 && envId >= 0 && statusId >= 0)
                 {
                     var isUpdated = _book.UpdateBookStatus(bookId, envId, statusId);
-                    //Runbook level notification to stack holders
-                    Book book = _book.GetBook(bookId);
-                    List<InviteUsers> inviteUsers = _userService.GetInviteUsers(book.TenantId);
-                    var list = (from i in inviteUsers select i.InviteUserEmailId).ToList<string>();
-                    var subject = "Notification  Runbook Updates:" + book.BookName + ":-";
-                    IEnumerable<Task> tasks = _taskService.GetAllTasksByBookID(bookId);
-                    var bodystart = @"<section>
+                    if (isUpdated)
+                    {
+                        //Runbook level notification to stack holders
+                        Book book = _book.GetBook(bookId);
+                        if (book != null)
+                        {
+                            List<InviteUsers> inviteUsers = _userService.GetInviteUsers(book.TenantId);
+                            var list = (from i in inviteUsers select i.InviteUserEmailId).ToList<string>();
+                            var subject = "Notification  Runbook Updates:" + book.BookName + ":-";
+                            IEnumerable<Task> tasks = _taskService.GetAllTasksByBookID(bookId);
+                            var bodystart = @"<section>
                                         <p>Hi Team,</p> 
                                         <p>Runbook:" + book.BookName + @" status is Listed below.</p>
                                         <p><b><u>Task list:</b></u></p>";
-                    foreach (Task t in tasks)
-                    {
-                        bodystart += $"<p> Task - { t.TaskName } - {t.Status} </p>";
-                    }
+                            foreach (Task t in tasks)
+                            {
+                                bodystart += $"<p> Task - { t.TaskName } - {t.Status} </p>";
+                            }
 
-                    bodystart += "<p>Regards,</p> <p> Runbook Team</p>";
-                    bodystart += "</section>";
+                            bodystart += "<p>Regards,</p> <p> Runbook Team</p>";
+                            bodystart += "</section>";
 
-                    _mailService.SendEmail(list, subject, bodystart);
-                    //End Runbook level  Notifications.
-
-                    if (isUpdated)
-                    {
+                            _mailService.SendEmail(list, subject, bodystart);
+                            //End Runbook level  Notifications.
+                        }
                         return Ok("Book updated successfully");
                     }
                     else

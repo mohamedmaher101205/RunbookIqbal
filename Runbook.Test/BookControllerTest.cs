@@ -179,8 +179,8 @@ namespace Runbook.Test
         [Fact]
         public void UpdateBookByEnvironment_Successfull()
         {
-            int bookId = 1;
-            int envId = 1;
+            int bookId = 5;
+            int envId = 20;
             int statusId = 1;
             bookServiceMoq.Setup(c => c.UpdateBookStatus(bookId, envId, statusId)).Returns(true);
             // Act
