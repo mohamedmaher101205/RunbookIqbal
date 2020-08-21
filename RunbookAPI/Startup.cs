@@ -47,7 +47,7 @@ namespace Runbook.API
 
             services.AddCors(c =>
             {
-                c.AddPolicy("AllowAllHeaders", options => options.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://runbook-dev.azurewebsites.net")
+                c.AddPolicy("AllowAllHeaders", options => options.WithOrigins("http://localhost:3001", "https://localhost:3001","http://localhost:3000", "https://localhost:3000", "https://runbook-dev.azurewebsites.net")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .WithExposedHeaders("Authorization"));
