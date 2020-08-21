@@ -52,5 +52,19 @@ namespace Runbook.Services.Interfaces
         /// <param name="tenantId"></param>
         /// <returns></returns>
         int CreateCustomApplicationType(ApplicationType appType, int tenantId);
+      
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        bool SendMailMultipleresourceOnSameDate(Book book);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        Book GetBookForMultipleRelease(int bookId);
+
     }
 }

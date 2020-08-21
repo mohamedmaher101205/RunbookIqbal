@@ -75,7 +75,7 @@ namespace Runbook.API.Controllers
         /// <summary>
         /// Send email to invite the user
         /// </summary>
-        /// <param name="email"></param>
+        /// <param name="inviteUsers"></param>
         /// <returns>sucess message</returns>
         [HttpPost]
         [Route("InviteUserByEmail")]

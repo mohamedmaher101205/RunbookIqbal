@@ -146,7 +146,7 @@ namespace Runbook.Test
             string subject = "salary"; 
             string body = "salary for may";
 
-            mailService.Setup(c => c.SendEmail(email, subject, body,string.Empty));
+            mailService.Setup(c => c.SendEmail(email, subject, body));
             userServiceMoq.Setup(c => c.CreateInviteUsers(invite)).Returns(true);
 
             //Act
