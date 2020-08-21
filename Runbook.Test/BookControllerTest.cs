@@ -22,6 +22,9 @@ namespace Runbook.Test
         {
             bookServiceMoq = new Mock<IBookService>();
             logger = new Mock<ILogger<BookController>>();
+            userService = new Mock<IUserService>();
+            mailService = new Mock<IMailService>();
+            taskService = new Mock<ITaskService>();
         }
 
 
