@@ -24,5 +24,13 @@ namespace Runbook.Services.Interfaces
         /// <param name="tenantId"></param>
         /// <returns>List of teams</returns>
         Task<IEnumerable<Team>> GetAllTeams(int tenantId);
+
+        Task<Team> GetTeam(int teamId);
+
+        Task<int> AddMembersToTeam(List<User> users,int teamId);
+
+        Task<IEnumerable<User>> GetTeamMembers(int teamId);
+
+        Task<bool> RemoveUserFromTeam(int teamId,int userId);
     }
 }

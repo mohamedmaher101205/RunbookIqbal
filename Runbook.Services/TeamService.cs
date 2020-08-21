@@ -88,5 +88,105 @@ namespace Runbook.Services
             }
             
         }
+
+        /// <summary>
+        /// It is used to get the team by Team id
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
+        public async Task<Team> GetTeam(int teamId)
+        {
+            try
+            {
+                string getTeamCmd = @"SELECT * FROM dbo.TEAM WHERE TeamId = @TeamId";
+                Team team = null;
+                using (IDbConnection con = _Idbconnection)
+                {
+                    con.Open();
+                    team = await con.QueryFirstOrDefaultAsync<Team>(getTeamCmd, new {TeamId = teamId});
+                    con.Close();
+                }
+                return team;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<int> AddMembersToTeam(List<User> users,int teamId)
+        {
+            try
+            {
+                string addMembersToTeamCmd = @"Insert into dbo.[TeamUsers](UserId,TeamId)
+                                                    Values(@UserId,@TeamId)";
+                int membersAdded;
+                List<TeamUser> membersToAdd = new List<TeamUser>();
+                foreach (var user in users)
+                {
+                    membersToAdd.Add(new TeamUser(){
+                        UserId = user.UserId,
+                        TeamId = teamId
+                    });
+                }
+                using (IDbConnection con = _Idbconnection)
+                {
+                    con.Open();                    
+                    membersAdded = await con.ExecuteAsync(addMembersToTeamCmd, membersToAdd);
+                    con.Close();
+                }
+                return membersAdded;
+            }
+            catch(Exception ex){
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<User>> GetTeamMembers(int teamId)
+        {
+            try
+            {
+                string getAllTeamsUsersCmd = @"SELECT U.UserId,FirstName,LastName,UserEmail,TenantId 
+                                            FROM dbo.[User] U 
+                                        JOIN dbo.[TeamUsers] TU ON U.UserId = TU.UserId
+                                        WHERE TU.TeamId = @TeamId";
+                IEnumerable<User> users = null;
+                using (IDbConnection con = _Idbconnection)
+                {
+                    con.Open();
+                    users = await con.QueryAsync<User>(getAllTeamsUsersCmd, new {TeamId = teamId});
+                    con.Close();
+                }
+                return users;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<bool> RemoveUserFromTeam(int teamId,int userId)
+        {
+            try
+            {
+                string removeTeamsUsersCmd = @"DELETE FROM dbo.[TeamUsers] WHERE UserId = @UserId AND TeamId = @TeamId";
+                bool isUserDeleted = false;
+                int userDeleted;
+                using (IDbConnection con = _Idbconnection)
+                {
+                    con.Open();
+                    userDeleted = await con.ExecuteAsync(removeTeamsUsersCmd, new {TeamId = teamId, UserId = userId});
+                    con.Close();
+                }
+                if(userDeleted > 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

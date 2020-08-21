@@ -60,10 +60,14 @@ namespace Runbook.Models
         /// <summary>
         /// 
         /// </summary>
-        public string Subscribers { get; set; }
+        public int TenantId { get; set; }
+        /// <value></value>
+        public string StatusDescription { get; set; }
+
         /// <summary>
         /// 
         /// </summary>
-        public int TenantId { get; set; }
+        /// <value></value>
+         public string Subscribers { get; set; }
     }
 }
