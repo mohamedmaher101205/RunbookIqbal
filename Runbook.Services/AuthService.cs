@@ -71,6 +71,9 @@ namespace Runbook.Services
                         UserParams.Add("@LastName", user.LastName);
                         UserParams.Add("@UserEmail", user.UserEmail);
                         UserParams.Add("@Password", user.Password);
+                        UserParams.Add("@Phone", user.Phone);
+                        UserParams.Add("@Designation", user.Designation);
+                        UserParams.Add("@Organization", user.Organization);
                         UserParams.Add("@RegisteredUserId", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
 
                         if (res != null)

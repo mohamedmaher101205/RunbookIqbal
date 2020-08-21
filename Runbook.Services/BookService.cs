@@ -1,4 +1,5 @@
 using Dapper;
+using Microsoft.Extensions.Configuration;
 using Runbook.Models;
 using Runbook.Services.Interfaces;
 using System;
@@ -97,18 +98,17 @@ namespace Runbook.Services
                 Book book = null;
                 IEnumerable<Environments> environments = null;
 
-                using (IDbConnection con = _Idbconnection)
-                {
-                    con.Open();
-                    book = con.QueryFirstOrDefault<Book>(bookcmd, new { BookId = id });
-                    environments = con.Query<Environments>(envcmd, new { BookId = id });
-                    con.Close();
+                IDbConnection con = _Idbconnection;
+                con.Open();
+                book = con.QueryFirstOrDefault<Book>(bookcmd, new { BookId = id });
+                environments = con.Query<Environments>(envcmd, new { BookId = id });
+                con.Close();
 
-                    foreach (var env in environments)
-                    {
-                        book.Environments.Add(env);
-                    }
+                foreach (var env in environments)
+                {
+                    book.Environments.Add(env);
                 }
+
                 return book;
             }
             catch (Exception e)
@@ -212,28 +212,26 @@ namespace Runbook.Services
             string updatecmd = @"UPDATE [dbo].[BookEnvironment] SET StatusId = @StatusId 
                                 WHERE BookId = @BookId AND EnvId = @EnvId";
             int affectedRows = 0;
-            using (IDbConnection con = _Idbconnection)
-            {
-                con.Open();
-                var sqltrans = con.BeginTransaction();
-                affectedRows = con.Execute(updatecmd,
-                        new
-                        {
-                            statusId = statusId,
-                            BookId = bookId,
-                            EnvId = envId
-                        }, sqltrans);
+            IDbConnection con = _Idbconnection;
+            con.Open();
+            var sqltrans = con.BeginTransaction();
+            affectedRows = con.Execute(updatecmd,
+                    new
+                    {
+                        statusId = statusId,
+                        BookId = bookId,
+                        EnvId = envId
+                    }, sqltrans);
 
-                if (affectedRows > 0)
-                {
-                    sqltrans.Commit();
-                }
-                else
-                {
-                    sqltrans.Rollback();
-                }
-                con.Close();
+            if (affectedRows > 0)
+            {
+                sqltrans.Commit();
             }
+            else
+            {
+                sqltrans.Rollback();
+            }
+            con.Close();
             if (affectedRows > 0)
             {
                 return true;

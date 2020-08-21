@@ -45,5 +45,21 @@ namespace Runbook.Services.Interfaces
         /// <param name="task"></param>
         /// <returns></returns>
         int UpdateTask(int taskId, Task task);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bookId"></param>
+        /// <returns></returns>
+        IEnumerable<Task> GetAllTasksByBookID(int bookId);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="emailId"></param>
+        /// <returns></returns>
+        bool subscribeTask(int taskId, string emailId);
+
     }
 }

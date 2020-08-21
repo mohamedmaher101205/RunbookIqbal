@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Runbook.Models;
+using Runbook.Services;
 using Runbook.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,16 +21,25 @@ namespace Runbook.API.Controllers
     {
         private readonly IBookService _book;
         private readonly ILogger _logger;
+        private readonly IUserService _userService;
+        private readonly IMailService _mailService;
+        private readonly ITaskService _taskService;
 
         /// <summary>
         /// This contructor is to inject object using dependency injection
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="book"></param>
-        public BookController(ILogger<BookController> logger, IBookService book)
+        /// <param name="userService"></param>
+        /// <param name="mailService"></param>
+        /// <param name="taskService"></param>
+        public BookController(ILogger<BookController> logger, IBookService book, IUserService userService, IMailService mailService, ITaskService taskService)
         {
             _logger = logger;
             _book = book;
+            _userService = userService;
+            _mailService = mailService;
+            _taskService = taskService;
         }
 
         /// <summary>
@@ -153,6 +163,27 @@ namespace Runbook.API.Controllers
                 if (bookId > 0 && envId >= 0 && statusId >= 0)
                 {
                     var isUpdated = _book.UpdateBookStatus(bookId, envId, statusId);
+                    //Runbook level notification to stack holders
+                    Book book = _book.GetBook(bookId);
+                    List<InviteUsers> inviteUsers = _userService.GetInviteUsers(book.TenantId);
+                    var list = (from i in inviteUsers select i.InviteUserEmailId).ToList<string>();
+                    var subject = "Notification  Runbook Updates:" + book.BookName + ":-";
+                    IEnumerable<Task> tasks = _taskService.GetAllTasksByBookID(bookId);
+                    var bodystart = @"<section>
+                                        <p>Hi Team,</p> 
+                                        <p>Runbook:" + book.BookName + @" status is Listed below.</p>
+                                        <p><b><u>Task list:</b></u></p>";
+                    foreach (Task t in tasks)
+                    {
+                        bodystart += $"<p> Task - { t.TaskName } - {t.Status} </p>";
+                    }
+
+                    bodystart += "<p>Regards,</p> <p> Runbook Team</p>";
+                    bodystart += "</section>";
+
+                    _mailService.SendEmail(list, subject, bodystart);
+                    //End Runbook level  Notifications.
+
                     if (isUpdated)
                     {
                         return Ok("Book updated successfully");

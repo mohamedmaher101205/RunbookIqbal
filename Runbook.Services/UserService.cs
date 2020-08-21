@@ -116,6 +116,43 @@ namespace Runbook.Services
 
 
         }
+
+        /// <summary>
+        /// Fetch the InvitedUser List
+        /// </summary>
+        /// <param name="tenantId"></param>
+        /// <returns></returns>
+        public List<InviteUsers> GetInviteUsers(int tenantId)
+        {
+            try
+            {
+                string userscmd = @"SELECT [Id]
+                                          ,[InviteUserEmailId]
+                                          ,[InviteUrl]
+                                          ,[InviteRoleLevel]
+                                          ,[Accepted]
+                                          ,[TenantId]
+                                    FROM [dbo].[InviteUser] Where TenantId = @TenantId and Accepted =1";
+
+                IEnumerable<InviteUsers> users = null;
+                IDbConnection con = _Idbconnection;
+                con.Open();
+                users = con.Query<InviteUsers>(userscmd, new
+                {
+                    TenantId = tenantId
+                });
+                con.Close();
+
+
+                return users.AsList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         public bool CreateInviteUsers(InviteUsers inviteUsers)
         {
             InviteUsers userExist = null;
@@ -136,6 +173,7 @@ namespace Runbook.Services
                 con.Open();
 
                 userExist = con.QuerySingleOrDefault<InviteUsers>(userCmd, new { InviteUserEmailId = UserEmail,InviteUrl= inviteUsers.InviteUrl,InviteRoleLevel=inviteUsers.InviteRoleLevel,TenantId=inviteUsers.TenantId,UserId= inviteUsers.UserId });
+
                 if (userExist != null)
                 {
                     return false;

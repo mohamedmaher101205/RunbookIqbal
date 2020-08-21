@@ -191,5 +191,35 @@ namespace Runbook.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        /// <summary>
+        /// Modify task status
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <param name="emailId"></param>
+        /// <returns>True or false</returns>
+        [HttpPut]
+        [Route("subscribeTask/{taskId}/{emailId}")]
+        public ActionResult<bool> subscribeTask(int taskId, string emailId)
+        {
+            try
+            {
+                if (taskId > 0 && !string.IsNullOrEmpty(emailId))
+                {
+
+                    return Ok(_task.subscribeTask(taskId, emailId));
+                }
+                else
+                {
+                    _logger.LogError($"Invalid taskid : {taskId} or email Ids : {emailId}");
+                    return BadRequest($"Invalid taskid : {taskId} or email Ids : {emailId}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Internal Server Error in UpdateTaskStatus : {ex}");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
     }
 }

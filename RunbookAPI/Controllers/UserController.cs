@@ -82,7 +82,8 @@ namespace Runbook.API.Controllers
         public async Task<IActionResult> SendEMail([FromBody] InviteUsers inviteUsers)
         {
             try
-            {
+            {              
+
                 var res = _user.CreateInviteUsers(inviteUsers);
 
                 if (res)
@@ -102,6 +103,7 @@ namespace Runbook.API.Controllers
                 {
                     return Ok("User already Exist or Already Invitation Sent");
                 }
+
 
             }
             catch (Exception ex)
