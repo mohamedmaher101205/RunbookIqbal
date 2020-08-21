@@ -116,24 +116,42 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Adds the members to team
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
         public async Task<int> AddMembersToTeam(List<User> users,int teamId)
         {
             try
             {
                 string addMembersToTeamCmd = @"Insert into dbo.[TeamUsers](UserId,TeamId)
                                                     Values(@UserId,@TeamId)";
+
+                string getAllTeamsUsersCmd = @"SELECT U.UserId,FirstName,LastName,UserEmail,TenantId 
+                                            FROM dbo.[User] U 
+                                        JOIN dbo.[TeamUsers] TU ON U.UserId = TU.UserId
+                                        WHERE TU.TeamId = @TeamId";
                 int membersAdded;
                 List<TeamUser> membersToAdd = new List<TeamUser>();
-                foreach (var user in users)
-                {
-                    membersToAdd.Add(new TeamUser(){
-                        UserId = user.UserId,
-                        TeamId = teamId
-                    });
-                }
+                IEnumerable<User> teamUsers = null;
+                
                 using (IDbConnection con = _Idbconnection)
                 {
-                    con.Open();                    
+                    con.Open(); 
+                    teamUsers = con.Query<User>(getAllTeamsUsersCmd,new {TeamId = teamId});
+                    var tempusers = teamUsers as List<User>;
+                    foreach (var user in users)
+                    {
+                        User userExist = tempusers.Find(teamuser => teamuser.UserId == user.UserId);
+                        if(userExist == null){
+                            membersToAdd.Add(new TeamUser(){
+                                    UserId = user.UserId,
+                                    TeamId = teamId
+                            });
+                        }
+                    }                
                     membersAdded = await con.ExecuteAsync(addMembersToTeamCmd, membersToAdd);
                     con.Close();
                 }
@@ -144,6 +162,11 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Gets all team members
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<User>> GetTeamMembers(int teamId)
         {
             try
@@ -167,12 +190,17 @@ namespace Runbook.Services
             }
         }
 
+        /// <summary>
+        /// Removes the members from team
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<bool> RemoveUserFromTeam(int teamId,int userId)
         {
             try
             {
                 string removeTeamsUsersCmd = @"DELETE FROM dbo.[TeamUsers] WHERE UserId = @UserId AND TeamId = @TeamId";
-                bool isUserDeleted = false;
                 int userDeleted;
                 using (IDbConnection con = _Idbconnection)
                 {
